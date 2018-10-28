@@ -17,8 +17,33 @@ void AImmortalPlayerController::BeginPlay()
 }
 
 
-APaperCharacter* AImmortalPlayerController::GetControlledCharacter() const
+ADefaultCharacter* AImmortalPlayerController::GetControlledCharacter() const
 {
-	return Cast<APaperCharacter>(GetPawn());
+	return Cast<ADefaultCharacter>(GetPawn());
 }
+
+void AImmortalPlayerController::SetPawn(APawn* InPawn)
+{
+	Super::SetPawn(InPawn);
+	if (InPawn)
+	{
+		auto ControlledCharacter = Cast<ADefaultCharacter>(InPawn);
+		if (!ensure(ControlledCharacter)) { return; }
+		ControlledCharacter->OnDeath.AddUniqueDynamic(this, &AImmortalPlayerController::OnCharacterDeath);
+	}
+}
+
+void AImmortalPlayerController::SwapCharacter()
+{
+	//auto ControlledCharacter = GetControlledCharacter();
+	//if (!ensure(ControlledCharacter)) { return; }
+	//TArray<AActor*> ActorsToSwap = ControlledCharacter->SwapRange->GetOverlappingActors();
+}
+
+void AImmortalPlayerController::OnCharacterDeath()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Character Died"));
+}
+
+
 
