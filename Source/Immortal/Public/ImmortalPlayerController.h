@@ -16,8 +16,16 @@ class IMMORTAL_API AImmortalPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 public:
-	APaperCharacter* GetControlledCharacter() const;
+	virtual void BeginPlay() override;
+
+	ADefaultCharacter* GetControlledCharacter() const;
 	
-	void BeginPlay() override;
-	
+	virtual void SetPawn(APawn* InPawn) override;
+
+	void SwapCharacter();
+
+private:
+	UFUNCTION()
+	void OnCharacterDeath();
+
 };
