@@ -3,6 +3,7 @@
 #include "ImmortalPlayerController.h"
 #include "DefaultCharacter.h"
 #include "Components/SphereComponent.h"
+#include "Engine/World.h"
 
 
 void AImmortalPlayerController::SetPawn(APawn* InPawn)
@@ -39,34 +40,43 @@ void AImmortalPlayerController::Tick(float DeltaSeconds)
 
 void AImmortalPlayerController::SwapCharacter()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Hello world!"));
-
-	if (!(ControlledCharacter)) { return; }
-	TArray<AActor*> OutActorsInSwapSphere;
-	ControlledCharacter->GetActorsInSwapSphere(OutActorsInSwapSphere);
-	for (auto EachActor : OutActorsInSwapSphere)
+	ADefaultCharacter* ClosestCharacter = Cast<ADefaultCharacter>(GetClosestPawn());
+	if (!ClosestCharacter) { return; }
+	UE_LOG(LogTemp, Warning, TEXT("Closest pawn: %s"), *ClosestCharacter->GetName());
+	if (ClosestCharacter->GetHealthPercent() <= 0 && ControlledCharacter->GetHealthPercent() > 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s's SwapSphere is overlapping %s"), *ControlledCharacter->GetName(), *EachActor->GetName());
-		if (EachActor != ControlledCharacter)
-		{
-			if (Cast<ADefaultCharacter>(EachActor)->GetHealthPercent() <= 0)
-			{
-				UnPossess();
-				Possess(Cast<APawn>(EachActor));
-				UE_LOG(LogTemp, Warning, TEXT("Trying to possess %s."), *EachActor->GetName());
-				Cast<ADefaultCharacter>(EachActor)->ResetCharacter();
-				break;
-			}
-		}
+		UnPossess();
+		ControlledCharacter->OnDeath.RemoveDynamic(this, &AImmortalPlayerController::OnCharacterDeath);
+		Possess(ClosestCharacter);
+		SetPawn(ClosestCharacter);
+		UE_LOG(LogTemp, Warning, TEXT("Player pawn now is: %s"), *ControlledCharacter->GetName());
+
+		ClosestCharacter->ResetCharacter();
 	}
 }
-//
-//void AImmortalPlayerController::Initialise(ADefaultCharacter * CharacterRef)
-//{
-//	ControlledCharacter = CharacterRef;
-//}
 
 void AImmortalPlayerController::OnCharacterDeath()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player Character Died"));
+}
+
+APawn * AImmortalPlayerController::GetClosestPawn()
+{
+	float ClosestDistance = SwapRadius;
+	APawn* OtherPawn = nullptr;
+	APawn* ClosestPawn = nullptr;
+	for (FConstPawnIterator Itr(GetWorld()->GetPawnIterator()); Itr; ++Itr)
+	{
+		if (Itr->Get() != ControlledCharacter)
+		{
+			OtherPawn = Itr->Get();
+			const float TempDistance = FVector::Dist(ControlledCharacter->GetActorLocation(), OtherPawn->GetActorLocation());
+			if (SwapRadius > TempDistance && ClosestDistance > TempDistance)
+			{
+				ClosestDistance = TempDistance;
+				ClosestPawn = OtherPawn;
+			}
+		}
+	}
+	return ClosestPawn;
 }

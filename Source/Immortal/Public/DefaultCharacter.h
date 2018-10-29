@@ -50,9 +50,11 @@ protected:
 
 
 	/** Called to fire*/
-	UFUNCTION(BlueprintCallable, Category = "Firing")
-	void Fire();
-	void MoveRight(float Value);
+	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
+	virtual void Fire();
+
+	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
+	virtual void MoveRight(float Value);
 
 public:
 
@@ -69,17 +71,11 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Health")
 	float GetHealthPercent() const;
 
-	/** Returns an array of actors overlapping with SwapShere component */
-	void GetActorsInSwapSphere(TArray<AActor*> &ActorsInSwapSphere);
-
 	void ResetCharacter();
 
 	FDefaultCharacterDelegate OnDeath;
 
 private:
-	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	USphereComponent* SwapSphere;
-
 	UPROPERTY(EditAnywhere, Category = CharacterSetup)
 	int32 StartingHealth;
 

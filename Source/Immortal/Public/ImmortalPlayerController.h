@@ -10,7 +10,6 @@
  * 
  */
 class ADefaultCharacter;
-class UCharacterMovementComponent;
 
 UCLASS()
 class IMMORTAL_API AImmortalPlayerController : public APlayerController
@@ -26,9 +25,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Swap")
 	void SwapCharacter();
 
-
-	//UFUNCTION(BlueprintCallable, Category = "Setup")
-	//void Initialise(ADefaultCharacter* CharacterRef);
 protected:
 	virtual void SetupInputComponent() override;
 
@@ -37,9 +33,12 @@ private:
 	UFUNCTION()
 	void OnCharacterDeath();
 
-	ADefaultCharacter* ControlledCharacter;
+	/** Returns the closest pawn other than possessed pawn within the swap radius */
+	APawn* GetClosestPawn();
 
-	UCharacterMovementComponent* MovementComponent;
+	ADefaultCharacter* ControlledCharacter = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = CharacterSetup)
+	float SwapRadius = 200;
 
 };

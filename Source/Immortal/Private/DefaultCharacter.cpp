@@ -47,14 +47,9 @@ ADefaultCharacter::ADefaultCharacter()
 	GetSprite()->SetIsReplicated(true);
 	bReplicates = true;
 
-	SwapSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SwapSphere"));
-	SwapSphere->SetupAttachment(GetCapsuleComponent());
-	SwapSphere->SetCollisionProfileName("OverlapOnlyPawn");
-	SwapSphere->SetSphereRadius(200);
-	SwapSphere->SetGenerateOverlapEvents(true);
-
 	// Setup Character
-	StartingHealth = 100;
+	StartingHealth = 10;
+	CurrentHealth = StartingHealth;
 	Damage = 1;
 	DamageRadius = 200;
 }
@@ -77,8 +72,7 @@ void ADefaultCharacter::SetupPlayerInputComponent(class UInputComponent* InputCo
 void ADefaultCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	CurrentHealth = StartingHealth;
-	SwapSphere = FindComponentByClass<USphereComponent>();
+	ResetCharacter();
 }
 
 void ADefaultCharacter::Tick(float DeltaSeconds)
@@ -147,12 +141,6 @@ void ADefaultCharacter::ResetCharacter()
 float ADefaultCharacter::GetHealthPercent() const
 {
 	return (float)CurrentHealth / (float)StartingHealth;
-}
-
-void ADefaultCharacter::GetActorsInSwapSphere(TArray<AActor*> &ActorsInSwapSphere)
-{
-	if (!SwapSphere) { return; }
-	SwapSphere->GetOverlappingActors(ActorsInSwapSphere);
 }
 
 

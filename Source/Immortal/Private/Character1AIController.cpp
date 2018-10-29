@@ -53,4 +53,5 @@ void ACharacter1AIController::SetPawn(APawn* InPawn)
 void ACharacter1AIController::OnCharacterDeath()
 {
 	UnPossess();
+	Destroy(this);
 }
