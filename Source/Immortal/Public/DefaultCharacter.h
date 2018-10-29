@@ -43,12 +43,16 @@ protected:
 
 	void UpdateCharacter();
 
+	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+
+
 	// End of APawn interface
 
 
 	/** Called to fire*/
 	UFUNCTION(BlueprintCallable, Category = "Firing")
 	void Fire();
+	void MoveRight(float Value);
 
 public:
 
@@ -67,6 +71,8 @@ public:
 
 	/** Returns an array of actors overlapping with SwapShere component */
 	void GetActorsInSwapSphere(TArray<AActor*> &ActorsInSwapSphere);
+
+	void ResetCharacter();
 
 	FDefaultCharacterDelegate OnDeath;
 

@@ -5,6 +5,7 @@
 #include "Components/TextRenderComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/DamageType.h"
@@ -14,7 +15,6 @@ DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
 //////////////////////////////////////////////////////////////////////////
 // AImmortalCharacter
-
 ADefaultCharacter::ADefaultCharacter()
 {
 	// Ignore PlayerController rotation.
@@ -59,6 +59,21 @@ ADefaultCharacter::ADefaultCharacter()
 	DamageRadius = 200;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Setup Player Input
+
+void ADefaultCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
+{
+	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	InputComponent->BindAxis("MoveRight", this, &ADefaultCharacter::MoveRight);
+	InputComponent->BindAction("Fire", IE_Repeat, this, &ADefaultCharacter::Fire);
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+// BeginPlay() and Tick()
+
 void ADefaultCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -71,35 +86,15 @@ void ADefaultCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	UpdateCharacter();
-	Fire();
-
 }
+
+
 //////////////////////////////////////////////////////////////////////////
-// Character Info
+// Player callable character actions
 
-float ADefaultCharacter::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+void ADefaultCharacter::MoveRight(float Value)
 {
-	int32 DamagePoints = FPlatformMath::RoundToInt(DamageAmount);
-	int32 DamageToApply = FMath::Clamp(DamagePoints, 0, CurrentHealth);
-
-	CurrentHealth -= DamageToApply;
-
-	if (CurrentHealth <= 0)
-	{
-		OnDeath.Broadcast();
-	}
-	return DamageToApply;
-}
-
-float ADefaultCharacter::GetHealthPercent() const
-{
-	return (float)CurrentHealth / (float)StartingHealth;
-}
-
-void ADefaultCharacter::GetActorsInSwapSphere(TArray<AActor*> &ActorsInSwapSphere)
-{
-	if (!SwapSphere) { return; }
-	SwapSphere->GetOverlappingActors(ActorsInSwapSphere);
+	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
 }
 
 void ADefaultCharacter::Fire()
@@ -116,7 +111,72 @@ void ADefaultCharacter::Fire()
 	);
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Take damage and broadcast when dead
+float ADefaultCharacter::TakeDamage
+(
+	float DamageAmount, 
+	FDamageEvent const & DamageEvent, 
+	AController * EventInstigator, 
+	AActor * DamageCauser
+)
+{
+	int32 DamagePoints = FPlatformMath::RoundToInt(DamageAmount);
+	int32 DamageToApply = FMath::Clamp(DamagePoints, 0, CurrentHealth);
 
+	CurrentHealth -= DamageToApply;
+
+	if (CurrentHealth <= 0)
+	{
+		OnDeath.Broadcast();
+	}
+	return DamageToApply;
+}
+
+////////////////////////////////////////////////////////////////////////////
+// Reset
+void ADefaultCharacter::ResetCharacter()
+{
+	CurrentHealth = StartingHealth;
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+// Getter Functions
+
+float ADefaultCharacter::GetHealthPercent() const
+{
+	return (float)CurrentHealth / (float)StartingHealth;
+}
+
+void ADefaultCharacter::GetActorsInSwapSphere(TArray<AActor*> &ActorsInSwapSphere)
+{
+	if (!SwapSphere) { return; }
+	SwapSphere->GetOverlappingActors(ActorsInSwapSphere);
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// Graphical update
+
+void ADefaultCharacter::UpdateCharacter()
+{
+	// Update animation to match the motion
+	UpdateAnimation();
+
+	// Now setup the rotation of the controller based on the direction we are travelling
+	const FVector PlayerVelocity = GetVelocity();
+	float TravelDirection = PlayerVelocity.X;
+	// Set the rotation so that the character faces his direction of travel.
+	if (TravelDirection < 0.0f)
+	{
+		SetActorRotation(FRotator(0.0, 180.0f, 0.0f));
+	}
+	else if (TravelDirection > 0.0f)
+	{
+		SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Animation
@@ -133,26 +193,3 @@ void ADefaultCharacter::UpdateAnimation()
 		GetSprite()->SetFlipbook(DesiredAnimation);
 	}
 }
-
-
-
-void ADefaultCharacter::UpdateCharacter()
-{
-	// Update animation to match the motion
-	UpdateAnimation();
-
-	// Now setup the rotation of the controller based on the direction we are travelling
-	const FVector PlayerVelocity = GetVelocity();
-	float TravelDirection = PlayerVelocity.X;
-	// Set the rotation so that the character faces his direction of travel.
-	if (TravelDirection < 0.0f)
-	{
-
-		SetActorRotation(FRotator(0.0, 180.0f, 0.0f));
-	}
-	else if (TravelDirection > 0.0f)
-	{
-		SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
-	}
-}
-
