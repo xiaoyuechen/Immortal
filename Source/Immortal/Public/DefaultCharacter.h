@@ -24,6 +24,7 @@ class ADefaultCharacter : public APaperCharacter
 	GENERATED_BODY()
 
 public:
+	ADefaultCharacter();
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
@@ -36,8 +37,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* IdleAnimation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class USphereComponent* SwapRange = nullptr;
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
@@ -52,7 +51,6 @@ protected:
 	void Fire();
 
 public:
-	ADefaultCharacter();
 
 	/** Called by the engined when actor damage is dealt */
 	float TakeDamage
@@ -63,13 +61,19 @@ public:
 		AActor * DamageCauser
 	) override;
 
-	// Return current health as a percentage of starting health, between 0 and 1
+	// Returns current health as a percentage of starting health, between 0 and 1
 	UFUNCTION(BlueprintPure, Category = "Health")
 	float GetHealthPercent() const;
+
+	/** Returns an array of actors overlapping with SwapShere component */
+	void GetActorsInSwapSphere(TArray<AActor*> &ActorsInSwapSphere);
 
 	FDefaultCharacterDelegate OnDeath;
 
 private:
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	USphereComponent* SwapSphere;
+
 	UPROPERTY(EditAnywhere, Category = CharacterSetup)
 	int32 StartingHealth;
 

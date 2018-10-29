@@ -5,9 +5,7 @@
 #include "Components/TextRenderComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
-#include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/Controller.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/DamageType.h"
 
@@ -19,9 +17,9 @@ DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
 ADefaultCharacter::ADefaultCharacter()
 {
-	// Use only Yaw from the controller and ignore the rest of the rotation.
+	// Ignore PlayerController rotation.
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = true;
+	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
 	// Set the size of our collision capsule.
@@ -49,8 +47,11 @@ ADefaultCharacter::ADefaultCharacter()
 	GetSprite()->SetIsReplicated(true);
 	bReplicates = true;
 
-	SwapRange = CreateDefaultSubobject<USphereComponent>(FName("SwapRange"));
-	SwapRange->SetSphereRadius(200.0f);
+	SwapSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SwapSphere"));
+	SwapSphere->SetupAttachment(GetCapsuleComponent());
+	SwapSphere->SetCollisionProfileName("OverlapOnlyPawn");
+	SwapSphere->SetSphereRadius(200);
+	SwapSphere->SetGenerateOverlapEvents(true);
 
 	// Setup Character
 	StartingHealth = 100;
@@ -62,15 +63,16 @@ void ADefaultCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	CurrentHealth = StartingHealth;
-
+	SwapSphere = FindComponentByClass<USphereComponent>();
 }
 
 void ADefaultCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
-	UpdateCharacter();	
+
+	UpdateCharacter();
 	Fire();
+
 }
 //////////////////////////////////////////////////////////////////////////
 // Character Info
@@ -91,7 +93,13 @@ float ADefaultCharacter::TakeDamage(float DamageAmount, FDamageEvent const & Dam
 
 float ADefaultCharacter::GetHealthPercent() const
 {
-	return (float) CurrentHealth/(float)StartingHealth;
+	return (float)CurrentHealth / (float)StartingHealth;
+}
+
+void ADefaultCharacter::GetActorsInSwapSphere(TArray<AActor*> &ActorsInSwapSphere)
+{
+	if (!SwapSphere) { return; }
+	SwapSphere->GetOverlappingActors(ActorsInSwapSphere);
 }
 
 void ADefaultCharacter::Fire()
@@ -103,7 +111,7 @@ void ADefaultCharacter::Fire()
 		GetActorLocation(),
 		DamageRadius,
 		UDamageType::StaticClass(),
-		{this},
+		{ this },
 		this
 	);
 }
@@ -118,9 +126,9 @@ void ADefaultCharacter::UpdateAnimation()
 	const FVector PlayerVelocity = GetVelocity();
 
 	// Are we moving or standing still?
-	
+
 	UPaperFlipbook* DesiredAnimation = (abs(PlayerVelocity.X) > 0.0f) ? RunningAnimation : IdleAnimation;
-	if( GetSprite()->GetFlipbook() != DesiredAnimation 	)
+	if (GetSprite()->GetFlipbook() != DesiredAnimation)
 	{
 		GetSprite()->SetFlipbook(DesiredAnimation);
 	}
@@ -134,19 +142,17 @@ void ADefaultCharacter::UpdateCharacter()
 	UpdateAnimation();
 
 	// Now setup the rotation of the controller based on the direction we are travelling
-	const FVector PlayerVelocity = GetVelocity();	
+	const FVector PlayerVelocity = GetVelocity();
 	float TravelDirection = PlayerVelocity.X;
 	// Set the rotation so that the character faces his direction of travel.
-	if (Controller != nullptr)
+	if (TravelDirection < 0.0f)
 	{
-		if (TravelDirection < 0.0f)
-		{
-			Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
-		}
-		else if (TravelDirection > 0.0f)
-		{
-			Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
-		}
+
+		SetActorRotation(FRotator(0.0, 180.0f, 0.0f));
+	}
+	else if (TravelDirection > 0.0f)
+	{
+		SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
 	}
 }
 

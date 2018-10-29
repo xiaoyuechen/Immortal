@@ -4,28 +4,33 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "DefaultCharacter.h"
 #include "ImmortalPlayerController.generated.h"
 
 /**
  * 
  */
+class ADefaultCharacter;
+
 UCLASS()
 class IMMORTAL_API AImmortalPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
 public:
-	virtual void BeginPlay() override;
-
-	ADefaultCharacter* GetControlledCharacter() const;
-	
 	virtual void SetPawn(APawn* InPawn) override;
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Swap")
 	void SwapCharacter();
+
+	//UFUNCTION(BlueprintCallable, Category = "Setup")
+	//void Initialise(ADefaultCharacter* CharacterRef);
 
 private:
 	UFUNCTION()
 	void OnCharacterDeath();
+
+	ADefaultCharacter* ControlledCharacter;
 
 };
