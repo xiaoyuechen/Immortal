@@ -16,7 +16,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDefaultCharacterDelegate);
  * The CharacterMovementComponent (inherited from ACharacter) handles movement of the collision capsule
  * The Sprite component (inherited from APaperCharacter) handles the visuals
  */
-class USphereComponent;
 
 UCLASS(config = Game)
 class ADefaultCharacter : public APaperCharacter
@@ -37,10 +36,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* IdleAnimation;
 
-
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 
+	/** Called to update character graphics*/
 	void UpdateCharacter();
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
@@ -49,14 +48,13 @@ protected:
 	// End of APawn interface
 
 
-	/** Called to fire*/
+	/** Called to fire */
 	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
 	virtual void Fire();
 
+	/** Called to move right */
 	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
 	virtual void MoveRight(float Value);
-
-public:
 
 	/** Called by the engined when actor damage is dealt */
 	float TakeDamage
@@ -67,15 +65,6 @@ public:
 		AActor * DamageCauser
 	) override;
 
-	// Returns current health as a percentage of starting health, between 0 and 1
-	UFUNCTION(BlueprintPure, Category = "Health")
-	float GetHealthPercent() const;
-
-	void ResetCharacter();
-
-	FDefaultCharacterDelegate OnDeath;
-
-private:
 	UPROPERTY(EditAnywhere, Category = CharacterSetup)
 	int32 StartingHealth;
 
@@ -87,5 +76,17 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = CharacterSetup)
 	float DamageRadius;
+
+public:
+
+
+	// Returns current health as a percentage of starting health, between 0 and 1
+	UFUNCTION(BlueprintPure, Category = "Health")
+	float GetHealthPercent() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Reset")
+	void ResetCharacter();
+
+	FDefaultCharacterDelegate OnDeath;
 
 };
