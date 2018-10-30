@@ -2,11 +2,12 @@
 
 #include "Character1AIController.h"
 #include "Engine/World.h"
+#include "BaseCharacter.h"
 
 void ACharacter1AIController::BeginPlay()
 {
 	Super::BeginPlay();
-	ADefaultCharacter* ControlledCharacter = GetControlledCharacter();
+	ABaseCharacter* ControlledCharacter = GetControlledCharacter();
 	if (!ControlledCharacter)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Character1AI controller is not controlling any character."));
@@ -16,7 +17,7 @@ void ACharacter1AIController::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("Character1AI controller is controlling %s."), *ControlledCharacter->GetName());
 	}
 
-	ADefaultCharacter* PlayerCharacter = GetPlayerCharacter();
+	ABaseCharacter* PlayerCharacter = GetPlayerCharacter();
 	if (!PlayerCharacter)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Character1AI controller can't find any player character."));
@@ -27,16 +28,16 @@ void ACharacter1AIController::BeginPlay()
 	}
 }
 
-ADefaultCharacter* ACharacter1AIController::GetControlledCharacter() const
+ABaseCharacter* ACharacter1AIController::GetControlledCharacter() const
 {
-	return Cast<ADefaultCharacter>(GetPawn());
+	return Cast<ABaseCharacter>(GetPawn());
 }
 
-ADefaultCharacter* ACharacter1AIController::GetPlayerCharacter() const
+ABaseCharacter* ACharacter1AIController::GetPlayerCharacter() const
 {
 	auto PlayerController = GetWorld()->GetFirstPlayerController()->GetPawn();
 	if (!PlayerController) { return nullptr; }
-	return Cast<ADefaultCharacter>(PlayerController);
+	return Cast<ABaseCharacter>(PlayerController);
 }
 
 void ACharacter1AIController::SetPawn(APawn* InPawn)
@@ -44,7 +45,7 @@ void ACharacter1AIController::SetPawn(APawn* InPawn)
 	Super::SetPawn(InPawn);
 	if (InPawn)
 	{
-		auto ControlledCharacter = Cast<ADefaultCharacter>(InPawn);
+		auto ControlledCharacter = Cast<ABaseCharacter>(InPawn);
 		if (!ensure(ControlledCharacter)) { return; }
 		ControlledCharacter->OnDeath.AddUniqueDynamic(this, &ACharacter1AIController::OnCharacterDeath);
 	}

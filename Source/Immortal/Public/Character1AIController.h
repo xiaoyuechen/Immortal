@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DefaultCharacter.h"
 #include "AIController.h"
 #include "Character1AIController.generated.h"
 
 /**
  * 
  */
+class ABaseCharacter;
+
 UCLASS()
 class IMMORTAL_API ACharacter1AIController : public AAIController
 {
@@ -18,9 +19,9 @@ class IMMORTAL_API ACharacter1AIController : public AAIController
 public:
 	void BeginPlay() override;
 
-	ADefaultCharacter* GetControlledCharacter() const;
+	ABaseCharacter* GetControlledCharacter() const;
 
-	ADefaultCharacter* GetPlayerCharacter() const;
+	ABaseCharacter* GetPlayerCharacter() const;
 
 	virtual void SetPawn(APawn* InPawn) override;
 

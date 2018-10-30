@@ -1,10 +1,8 @@
-// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
+// Copyright J&J.
 
-#include "DefaultCharacter.h"
+#include "BaseCharacter.h"
 #include "PaperFlipbookComponent.h"
-#include "Components/TextRenderComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/SphereComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -15,7 +13,7 @@ DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
 //////////////////////////////////////////////////////////////////////////
 // AImmortalCharacter
-ADefaultCharacter::ADefaultCharacter()
+ABaseCharacter::ABaseCharacter()
 {
 	// Ignore PlayerController rotation.
 	bUseControllerRotationPitch = false;
@@ -57,25 +55,25 @@ ADefaultCharacter::ADefaultCharacter()
 //////////////////////////////////////////////////////////////////////////
 // Setup Player Input
 
-void ADefaultCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
+void ABaseCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	InputComponent->BindAxis("MoveRight", this, &ADefaultCharacter::MoveRight);
-	InputComponent->BindAction("Fire", IE_Repeat, this, &ADefaultCharacter::Fire);
+	InputComponent->BindAxis("MoveRight", this, &ABaseCharacter::MoveRight);
+	InputComponent->BindAction("Fire", IE_Repeat, this, &ABaseCharacter::Fire);
 }
 
 
 ////////////////////////////////////////////////////////////////////////////
 // BeginPlay() and Tick()
 
-void ADefaultCharacter::BeginPlay()
+void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	ResetCharacter();
 }
 
-void ADefaultCharacter::Tick(float DeltaSeconds)
+void ABaseCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
@@ -86,12 +84,12 @@ void ADefaultCharacter::Tick(float DeltaSeconds)
 //////////////////////////////////////////////////////////////////////////
 // Player callable character actions
 
-void ADefaultCharacter::MoveRight(float Value)
+void ABaseCharacter::MoveRight(float Value)
 {
 	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
 }
 
-void ADefaultCharacter::Fire()
+void ABaseCharacter::Fire()
 {
 	UGameplayStatics::ApplyRadialDamage
 	(
@@ -107,11 +105,11 @@ void ADefaultCharacter::Fire()
 
 //////////////////////////////////////////////////////////////////////////
 // Take damage and broadcast when dead
-float ADefaultCharacter::TakeDamage
+float ABaseCharacter::TakeDamage
 (
-	float DamageAmount, 
-	FDamageEvent const & DamageEvent, 
-	AController * EventInstigator, 
+	float DamageAmount,
+	FDamageEvent const & DamageEvent,
+	AController * EventInstigator,
 	AActor * DamageCauser
 )
 {
@@ -129,7 +127,7 @@ float ADefaultCharacter::TakeDamage
 
 ////////////////////////////////////////////////////////////////////////////
 // Reset
-void ADefaultCharacter::ResetCharacter()
+void ABaseCharacter::ResetCharacter()
 {
 	CurrentHealth = StartingHealth;
 }
@@ -138,7 +136,7 @@ void ADefaultCharacter::ResetCharacter()
 ///////////////////////////////////////////////////////////////////////////
 // Getter Functions
 
-float ADefaultCharacter::GetHealthPercent() const
+float ABaseCharacter::GetHealthPercent() const
 {
 	return (float)CurrentHealth / (float)StartingHealth;
 }
@@ -147,7 +145,7 @@ float ADefaultCharacter::GetHealthPercent() const
 //////////////////////////////////////////////////////////////////////////
 // Graphical update
 
-void ADefaultCharacter::UpdateCharacter()
+void ABaseCharacter::UpdateCharacter()
 {
 	// Update animation to match the motion
 	UpdateAnimation();
@@ -169,7 +167,7 @@ void ADefaultCharacter::UpdateCharacter()
 //////////////////////////////////////////////////////////////////////////
 // Animation
 
-void ADefaultCharacter::UpdateAnimation()
+void ABaseCharacter::UpdateAnimation()
 {
 	const FVector PlayerVelocity = GetVelocity();
 
@@ -181,3 +179,5 @@ void ADefaultCharacter::UpdateAnimation()
 		GetSprite()->SetFlipbook(DesiredAnimation);
 	}
 }
+
+

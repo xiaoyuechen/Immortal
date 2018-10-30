@@ -1,8 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ImmortalPlayerController.h"
-#include "DefaultCharacter.h"
-#include "Components/SphereComponent.h"
+#include "BaseCharacter.h"
 #include "Engine/World.h"
 
 
@@ -12,7 +11,7 @@ void AImmortalPlayerController::SetPawn(APawn* InPawn)
 
 	if (InPawn)
 	{
-		ControlledCharacter = Cast<ADefaultCharacter>(InPawn);
+		ControlledCharacter = Cast<ABaseCharacter>(InPawn);
 		if (!ensure(ControlledCharacter)) { return; }
 		ControlledCharacter->OnDeath.AddUniqueDynamic(this, &AImmortalPlayerController::OnCharacterDeath);
 	}
@@ -40,7 +39,7 @@ void AImmortalPlayerController::Tick(float DeltaSeconds)
 
 void AImmortalPlayerController::SwapCharacter()
 {
-	ADefaultCharacter* ClosestCharacter = Cast<ADefaultCharacter>(GetClosestPawn());
+	ABaseCharacter* ClosestCharacter = Cast<ABaseCharacter>(GetClosestPawn());
 	if (!ClosestCharacter) { return; }
 	UE_LOG(LogTemp, Warning, TEXT("Closest pawn: %s"), *ClosestCharacter->GetName());
 	if (ClosestCharacter->GetHealthPercent() <= 0 && ControlledCharacter->GetHealthPercent() > 0)

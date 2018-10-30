@@ -1,40 +1,40 @@
-// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
+// Copyright J&J.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
-#include "DefaultCharacter.generated.h"
+#include "BaseCharacter.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDefaultCharacterDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBaseCharacterDelegate);
 
 /**
- * This class is the default character for Immortal, and it is responsible for all
- * physical interaction between the player and the world.
- *
- * The capsule component (inherited from ACharacter) handles collision with the world
- * The CharacterMovementComponent (inherited from ACharacter) handles movement of the collision capsule
- * The Sprite component (inherited from APaperCharacter) handles the visuals
- */
+* This class is the base character for Immortal, and it is responsible for all
+* physical interaction between the player and the world.
+*
+* The capsule component (inherited from ACharacter) handles collision with the world
+* The CharacterMovementComponent (inherited from ACharacter) handles movement of the collision capsule
+* The Sprite component (inherited from APaperCharacter) handles the visuals
+*/
 
 UCLASS(config = Game)
-class ADefaultCharacter : public APaperCharacter
+class ABaseCharacter : public APaperCharacter
 {
 	GENERATED_BODY()
 
 public:
-	ADefaultCharacter();
+	ABaseCharacter();
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
 protected:
 	// The animation to play while running around
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-	class UPaperFlipbook* RunningAnimation;
+		class UPaperFlipbook* RunningAnimation;
 
 	// The animation to play while idle (standing still)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-	class UPaperFlipbook* IdleAnimation;
+		class UPaperFlipbook* IdleAnimation;
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
@@ -50,11 +50,11 @@ protected:
 
 	/** Called to fire */
 	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
-	virtual void Fire();
+		virtual void Fire();
 
 	/** Called to move right */
 	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
-	virtual void MoveRight(float Value);
+		virtual void MoveRight(float Value);
 
 	/** Called by the engined when actor damage is dealt */
 	float TakeDamage
@@ -66,27 +66,27 @@ protected:
 	) override;
 
 	UPROPERTY(EditAnywhere, Category = CharacterSetup)
-	int32 StartingHealth;
+		int32 StartingHealth;
 
 	UPROPERTY(VisibleAnywhere, Category = CharacterSetup)
-	int32 CurrentHealth;
+		int32 CurrentHealth;
 
 	UPROPERTY(EditAnywhere, Category = CharacterSetup)
-	float Damage;
+		float Damage;
 
 	UPROPERTY(EditAnywhere, Category = CharacterSetup)
-	float DamageRadius;
+		float DamageRadius;
 
 public:
 
 
 	// Returns current health as a percentage of starting health, between 0 and 1
 	UFUNCTION(BlueprintPure, Category = "Health")
-	float GetHealthPercent() const;
+		float GetHealthPercent() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Reset")
-	void ResetCharacter();
+		void ResetCharacter();
 
-	FDefaultCharacterDelegate OnDeath;
+	FBaseCharacterDelegate OnDeath;
 
 };

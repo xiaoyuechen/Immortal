@@ -9,7 +9,7 @@
 /**
  * 
  */
-class ADefaultCharacter;
+class ABaseCharacter;
 
 UCLASS()
 class IMMORTAL_API AImmortalPlayerController : public APlayerController
@@ -36,7 +36,7 @@ private:
 	/** Returns the closest pawn other than possessed pawn within the swap radius */
 	APawn* GetClosestPawn();
 
-	ADefaultCharacter* ControlledCharacter = nullptr;
+	ABaseCharacter* ControlledCharacter = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = CharacterSetup)
 	float SwapRadius = 200;
