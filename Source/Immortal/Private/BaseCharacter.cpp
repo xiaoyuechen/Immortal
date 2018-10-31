@@ -1,18 +1,23 @@
 // Copyright J&J.
 
 #include "BaseCharacter.h"
+#include "BaseHealthBarWidget.h"
 #include "PaperFlipbookComponent.h"
+#include "BaseHealthBarWidgetComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "GameFramework/DamageType.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Camera/CameraComponent.h"
 
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
 //////////////////////////////////////////////////////////////////////////
-// AImmortalCharacter
+// AImmortalCharacter constructor
+
 ABaseCharacter::ABaseCharacter()
 {
 	// Ignore PlayerController rotation.
@@ -45,10 +50,29 @@ ABaseCharacter::ABaseCharacter()
 	GetSprite()->SetIsReplicated(true);
 	bReplicates = true;
 
+	// Create a camera boom attached to the root (capsule)
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->TargetArmLength = 500.0f;
+	CameraBoom->SocketOffset = FVector(0.0f, 0.0f, 75.0f);
+	CameraBoom->bAbsoluteRotation = true;
+	CameraBoom->bDoCollisionTest = false;
+	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
+
+	// Create an orthographic camera (no perspective) and attach it to the boom
+	SideViewCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("SideViewCamera"));
+	SideViewCameraComponent->ProjectionMode = ECameraProjectionMode::Orthographic;
+	SideViewCameraComponent->OrthoWidth = 2048.0f;
+	SideViewCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+
+	// Create a health bar widget component
+	//HealthBarWidgetComponent = CreateDefaultSubobject<UBaseHealthBarWidgetComponent>(TEXT("HealthBarWidget"));
+
 	// Setup Character
 	StartingHealth = 10;
 	CurrentHealth = StartingHealth;
-	Damage = 1;
+	Damage = 3;
 	DamageRadius = 200;
 }
 
@@ -60,7 +84,7 @@ void ABaseCharacter::SetupPlayerInputComponent(class UInputComponent* InputCompo
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	InputComponent->BindAxis("MoveRight", this, &ABaseCharacter::MoveRight);
-	InputComponent->BindAction("Fire", IE_Repeat, this, &ABaseCharacter::Fire);
+	InputComponent->BindAction("Fire", IE_Pressed, this, &ABaseCharacter::Fire);
 }
 
 

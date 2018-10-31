@@ -27,6 +27,7 @@ public:
 
 protected:
 	virtual void SetupInputComponent() override;
+	virtual void QuitGame();
 
 
 private:

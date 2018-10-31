@@ -21,7 +21,10 @@ void AImmortalPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 	InputComponent->BindAction("Swap", IE_Pressed, this, &AImmortalPlayerController::SwapCharacter);
+	InputComponent->BindAction("Exit", IE_Pressed, this, &AImmortalPlayerController::QuitGame);
+
 }
+
 
 void AImmortalPlayerController::BeginPlay()
 {
@@ -54,6 +57,10 @@ void AImmortalPlayerController::SwapCharacter()
 	}
 }
 
+void AImmortalPlayerController::QuitGame()
+{
+	ConsoleCommand("quit");
+}
 void AImmortalPlayerController::OnCharacterDeath()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player Character Died"));

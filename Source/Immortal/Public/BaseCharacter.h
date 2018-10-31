@@ -30,11 +30,22 @@ public:
 protected:
 	// The animation to play while running around
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-		class UPaperFlipbook* RunningAnimation;
+	class UPaperFlipbook* RunningAnimation;
 
 	// The animation to play while idle (standing still)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-		class UPaperFlipbook* IdleAnimation;
+	class UPaperFlipbook* IdleAnimation;
+
+	/** Camera boom positioning the camera beside the character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	class USpringArmComponent* CameraBoom;
+
+	/** Side view camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	class UCameraComponent* SideViewCameraComponent;
+
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	//class UBaseHealthBarWidgetComponent* HealthBarWidgetComponent;
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
@@ -43,9 +54,6 @@ protected:
 	void UpdateCharacter();
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
-
-
-	// End of APawn interface
 
 
 	/** Called to fire */
@@ -65,16 +73,16 @@ protected:
 		AActor * DamageCauser
 	) override;
 
-	UPROPERTY(EditAnywhere, Category = CharacterSetup)
+	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
 		int32 StartingHealth;
 
-	UPROPERTY(VisibleAnywhere, Category = CharacterSetup)
+	UPROPERTY(VisibleAnywhere, Category = "CharacterSetup")
 		int32 CurrentHealth;
 
-	UPROPERTY(EditAnywhere, Category = CharacterSetup)
+	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
 		float Damage;
 
-	UPROPERTY(EditAnywhere, Category = CharacterSetup)
+	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
 		float DamageRadius;
 
 public:
@@ -86,6 +94,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Reset")
 		void ResetCharacter();
+
 
 	FBaseCharacterDelegate OnDeath;
 
