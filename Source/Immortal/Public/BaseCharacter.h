@@ -44,9 +44,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	class UCameraComponent* SideViewCameraComponent;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-	//class UBaseHealthBarWidgetComponent* HealthBarWidgetComponent;
-
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 

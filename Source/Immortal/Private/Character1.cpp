@@ -7,6 +7,6 @@ ACharacter1::ACharacter1()
 
 }
 
-void ACharacter1::Fire()
-{
-}
+//void ACharacter1::Fire()
+//{
+//}

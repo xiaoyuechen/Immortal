@@ -1,9 +1,7 @@
 // Copyright J&J.
 
 #include "BaseCharacter.h"
-#include "BaseHealthBarWidget.h"
 #include "PaperFlipbookComponent.h"
-#include "BaseHealthBarWidgetComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -65,9 +63,6 @@ ABaseCharacter::ABaseCharacter()
 	SideViewCameraComponent->ProjectionMode = ECameraProjectionMode::Orthographic;
 	SideViewCameraComponent->OrthoWidth = 2048.0f;
 	SideViewCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-
-	// Create a health bar widget component
-	//HealthBarWidgetComponent = CreateDefaultSubobject<UBaseHealthBarWidgetComponent>(TEXT("HealthBarWidget"));
 
 	// Setup Character
 	StartingHealth = 10;

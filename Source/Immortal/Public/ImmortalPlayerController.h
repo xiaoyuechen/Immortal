@@ -7,9 +7,9 @@
 #include "ImmortalPlayerController.generated.h"
 
 /**
- * 
+ * This class is the player controller class for Immortal. 
+ * It is Responsible for swapping characters (player's persist ability) and controlling UI.
  */
-class ABaseCharacter;
 
 UCLASS()
 class IMMORTAL_API AImmortalPlayerController : public APlayerController
@@ -19,7 +19,6 @@ class IMMORTAL_API AImmortalPlayerController : public APlayerController
 public:
 
 	virtual void SetPawn(APawn* InPawn) override;
-	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Swap")
@@ -37,7 +36,7 @@ private:
 	/** Returns the closest pawn other than possessed pawn within the swap radius */
 	APawn* GetClosestPawn();
 
-	ABaseCharacter* ControlledCharacter = nullptr;
+	class ABaseCharacter* ControlledCharacter = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = CharacterSetup)
 	float SwapRadius = 200;

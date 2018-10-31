@@ -11,9 +11,7 @@ UBaseHealthBarWidgetComponent::UBaseHealthBarWidgetComponent()
 	if (HealthBarWidgetObj.Succeeded())
 	{
 		SetWidgetClass(HealthBarWidgetObj.Class);
-		UE_LOG(LogTemp, Warning, TEXT("Called"));	
 	}
-
 
 	SetWidgetSpace(EWidgetSpace::Screen);
 	SetRelativeLocation(FVector(0.f, 0.f, 150.f));
@@ -26,7 +24,6 @@ void UBaseHealthBarWidgetComponent::BeginPlay()
 
 	if (Cast<UBaseHealthBarWidget>(Widget))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Found"));
 		auto ParentCharacter = Cast<ABaseCharacter>(GetOwner());
 		if (ParentCharacter)
 		{

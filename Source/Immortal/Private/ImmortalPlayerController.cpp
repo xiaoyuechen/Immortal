@@ -25,15 +25,6 @@ void AImmortalPlayerController::SetupInputComponent()
 
 }
 
-
-void AImmortalPlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-	if (!ControlledCharacter) { return; }
-
-	UE_LOG(LogTemp, Warning, TEXT("PlayerController is controlling: %s"), *ControlledCharacter->GetName());
-}
-
 void AImmortalPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -44,14 +35,12 @@ void AImmortalPlayerController::SwapCharacter()
 {
 	ABaseCharacter* ClosestCharacter = Cast<ABaseCharacter>(GetClosestPawn());
 	if (!ClosestCharacter) { return; }
-	UE_LOG(LogTemp, Warning, TEXT("Closest pawn: %s"), *ClosestCharacter->GetName());
 	if (ClosestCharacter->GetHealthPercent() <= 0 && ControlledCharacter->GetHealthPercent() > 0)
 	{
 		UnPossess();
 		ControlledCharacter->OnDeath.RemoveDynamic(this, &AImmortalPlayerController::OnCharacterDeath);
 		Possess(ClosestCharacter);
 		SetPawn(ClosestCharacter);
-		UE_LOG(LogTemp, Warning, TEXT("Player pawn now is: %s"), *ControlledCharacter->GetName());
 
 		ClosestCharacter->ResetCharacter();
 	}
@@ -61,6 +50,7 @@ void AImmortalPlayerController::QuitGame()
 {
 	ConsoleCommand("quit");
 }
+
 void AImmortalPlayerController::OnCharacterDeath()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player Character Died"));

@@ -20,6 +20,6 @@ public:
 	//virtual void Tick(float DeltaSeconds) override;
 	
 protected:
-	virtual void Fire() override;
+	//virtual void Fire() override;
 	
 };

@@ -5,7 +5,6 @@
 void UBaseHealthBarWidget::SetParentCharacter(class ABaseCharacter* InCharacter)
 {
 	ParentCharacter	= InCharacter;
-	UE_LOG(LogTemp, Warning, TEXT("Parent Character: %s"), *ParentCharacter->GetName());
 }
 
 float UBaseHealthBarWidget::GetHealthPercent() const
