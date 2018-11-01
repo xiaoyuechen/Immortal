@@ -27,6 +27,14 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
+	/** Called to fire */
+	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
+	virtual void Fire();
+
+	/** Called to move right */
+	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
+	virtual void MoveRight(float Value);
+
 protected:
 	// The animation to play while running around
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
@@ -53,13 +61,6 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 
-	/** Called to fire */
-	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
-		virtual void Fire();
-
-	/** Called to move right */
-	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
-		virtual void MoveRight(float Value);
 
 	/** Called by the engined when actor damage is dealt */
 	float TakeDamage
@@ -69,6 +70,7 @@ protected:
 		AController * EventInstigator,
 		AActor * DamageCauser
 	) override;
+
 
 	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
 		int32 StartingHealth;

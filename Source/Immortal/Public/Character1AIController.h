@@ -9,7 +9,6 @@
 /**
  * 
  */
-class ABaseCharacter;
 
 UCLASS()
 class IMMORTAL_API ACharacter1AIController : public AAIController
@@ -17,15 +16,40 @@ class IMMORTAL_API ACharacter1AIController : public AAIController
 	GENERATED_BODY()
 	
 public:
-	void BeginPlay() override;
+	ACharacter1AIController();
 
-	ABaseCharacter* GetControlledCharacter() const;
+	virtual void BeginPlay() override;
 
-	ABaseCharacter* GetPlayerCharacter() const;
+	virtual void Tick(float DeltaSeconds) override;
+
+	class ABaseCharacter* GetPlayerCharacter() const;
 
 	virtual void SetPawn(APawn* InPawn) override;
 
-private:
+protected:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	float AcceptanceRadius = 300.f;
+
+	UPROPERTY(EditAnywhere, Category = "Setup")
+	float DetectRadius = 500;
+
+	UPROPERTY(EditAnywhere, Category = "Setup")
+	float MovementDirectionMod = 0.8f;
+
 	UFUNCTION()
-	void OnCharacterDeath();
+	virtual void OnCharacterDeath();
+
+	UFUNCTION()
+	virtual	void OnHit
+	(
+		UPrimitiveComponent* HitComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComponent,
+		FVector NormalImpulse,
+		const FHitResult& Hit
+	);
+
+	ABaseCharacter* PossessedCharacter;
+	ABaseCharacter* PlayerCharacter;
 };

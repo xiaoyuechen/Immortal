@@ -38,7 +38,7 @@ private:
 
 	class ABaseCharacter* ControlledCharacter = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = CharacterSetup)
+	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
 	float SwapRadius = 200;
 
 };
