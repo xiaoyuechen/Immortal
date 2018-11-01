@@ -16,10 +16,12 @@ class IMMORTAL_API ACharacter1 : public ABaseCharacter
 	
 public:
 	ACharacter1();
-	//virtual void BeginPlay() override;
+	virtual void BeginPlay() override;
 	//virtual void Tick(float DeltaSeconds) override;
 	
 protected:
-	//virtual void Fire() override;
+	UPROPERTY(EditAnywhere, Category = "Fire")
+	class UBaseFireComponent* FireComponent;
+	virtual void Fire() override;
 	
 };

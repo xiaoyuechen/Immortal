@@ -72,3 +72,9 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# Ignore unused contents (starter content, imported)
+Content/*
+
+# Don't ignore project contents
+!Content/Immortal

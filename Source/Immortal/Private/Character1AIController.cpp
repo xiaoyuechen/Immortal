@@ -53,7 +53,6 @@ void ACharacter1AIController::SetPawn(APawn* InPawn)
 
 void ACharacter1AIController::OnCharacterDeath()
 {
-	UE_LOG(LogTemp, Warning, TEXT("yO"))
 	UnPossess();
 	Destroy(this);
 }

@@ -7,7 +7,9 @@
 
 UBaseHealthBarWidgetComponent::UBaseHealthBarWidgetComponent()
 {
-	static ConstructorHelpers::FClassFinder<UUserWidget> HealthBarWidgetObj(TEXT("/Game/UI/BP_BaseHealthBarWidget"));
+	PrimaryComponentTick.bCanEverTick = true;
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> HealthBarWidgetObj(TEXT("/Game/Immortal/UI/BP_BaseHealthBarWidget"));
 	if (HealthBarWidgetObj.Succeeded())
 	{
 		SetWidgetClass(HealthBarWidgetObj.Class);
