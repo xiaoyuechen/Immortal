@@ -19,7 +19,7 @@ UBaseFireComponent::UBaseFireComponent()
 	}
 
 	ProjectileNumber = 999999;
-	WeaponCoolingTime = 1.f;
+	WeaponCoolingTime = 0.5f;
 	LaunchSpeed = 1000;
 }
 
@@ -43,7 +43,7 @@ void UBaseFireComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	{
 		FiringState = EFiringState::OutOfAmmo;
 	}
-	else if (GetWorld()->GetTimerManager().GetTimerElapsed(Timer) > WeaponCoolingTime)
+	else if (GetWorld()->GetTimerManager().GetTimerRate(Timer) > 0)
 	{
 		FiringState = EFiringState::Cooling;
 	}
@@ -61,7 +61,7 @@ void UBaseFireComponent::Fire()
 	if (FiringState == EFiringState::Ready)
 	{
 		FVector OwnerLocation = GetOwner()->GetActorLocation();
-		FVector SpawnLocation = FVector(OwnerLocation.X, OwnerLocation.Y, OwnerLocation.Z + 150.f);
+		FVector SpawnLocation = FVector(OwnerLocation.X, OwnerLocation.Y, OwnerLocation.Z + 110.f);
 		auto Projectile = GetWorld()->
 			SpawnActor<ABaseProjectile>
 			(
@@ -70,6 +70,7 @@ void UBaseFireComponent::Fire()
 				GetOwner()->GetActorRotation()
 			);
 		Projectile->LaunchProjectile(LaunchSpeed);
+		GetWorld()->GetTimerManager().SetTimer(Timer,WeaponCoolingTime,false);
 	}
 }
 

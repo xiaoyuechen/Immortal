@@ -22,14 +22,14 @@ ABaseProjectile::ABaseProjectile()
 	CollisionMesh->SetVisibility(true);
 
 	DestroyDelay = 10.f;
-	ProjectileDamage = 20.f;
+	ProjectileDamage = 5.f;
 }
 
 // Called when the game starts or when spawned
 void ABaseProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	ProjectileMovement->ProjectileGravityScale = 0.1f;
+	ProjectileMovement->ProjectileGravityScale = 0.2f;
 	CollisionMesh->OnComponentHit.AddDynamic(this, &ABaseProjectile::OnHit);
 
 }
@@ -60,4 +60,5 @@ void ABaseProjectile::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherAc
 
 void ABaseProjectile::OnTimerExpire()
 {
+	Destroy();
 }
