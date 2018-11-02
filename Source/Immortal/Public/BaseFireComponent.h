@@ -31,13 +31,14 @@ protected:
 
 	EFiringState FiringState;
 
+	// Decides which projectile to launch
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Setup")
-	TSubclassOf<ABaseProjectile> ProjectileBlueprint;
+	UClass* ProjectileBlueprint;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Setup")
 	int32 ProjectileNumber;
 
-	// the minimal interval between two projectile fires, in seconds
+	// The minimal interval between two projectile fires, in seconds
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Setup")
 	float WeaponCoolingTime;
 

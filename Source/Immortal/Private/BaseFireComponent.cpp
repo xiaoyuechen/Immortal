@@ -4,18 +4,18 @@
 #include "UObject/ConstructorHelpers.h"
 #include "BaseProjectile.h"
 
-
-// Sets default values for this component's properties
 UBaseFireComponent::UBaseFireComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	static ConstructorHelpers::FObjectFinder<UBlueprint> ProjectileBlueprintObj(TEXT("/Game/Immortal/Weapons/BaseProjectile/BP_BaseProjectile"));
-	if (ProjectileBlueprintObj.Succeeded())
+	// Set default projectile blueprint
+	static ConstructorHelpers::FObjectFinder<UClass> ProjectileBlueprintFinder
+	(
+		TEXT("Class'/Game/Immortal/Weapons/BaseProjectile/BP_BaseProjectile.BP_BaseProjectile_C'")
+	);
+	if (ProjectileBlueprintFinder.Succeeded())
 	{
-		ProjectileBlueprint = ProjectileBlueprintObj.Object->GeneratedClass;
+		ProjectileBlueprint = ProjectileBlueprintFinder.Object;
 	}
 
 	ProjectileNumber = 999999;
@@ -69,6 +69,7 @@ void UBaseFireComponent::Fire()
 				SpawnLocation,
 				GetOwner()->GetActorRotation()
 			);
+		if (!ensure(Projectile)) { return; }
 		Projectile->LaunchProjectile(LaunchSpeed);
 		GetWorld()->GetTimerManager().SetTimer(Timer,WeaponCoolingTime,false);
 	}

@@ -7,7 +7,9 @@
 #include "BaseHealthBarWidgetComponent.generated.h"
 
 /**
- * 
+ * This class is responsible for drawing health bar widget. 
+ * You can add this class as a health bar widget component to a character.
+ * You can also choose which health bar widget to draw by assigning it in blueprint
  */
 UCLASS(ClassGroup = (UserInterface), meta = (BlueprintSpawnableComponent))
 class IMMORTAL_API UBaseHealthBarWidgetComponent : public UWidgetComponent

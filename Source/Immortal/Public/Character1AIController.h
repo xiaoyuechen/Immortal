@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright J&J.
 
 #pragma once
 
@@ -7,7 +7,10 @@
 #include "Character1AIController.generated.h"
 
 /**
- * 
+ * This class is character1 AI controller for immortal.
+ * It can move character1 back and forth, detect the player character, 
+ * and move towards it until an acceptance range. 
+ * It also fires at the player character. 
  */
 
 UCLASS()

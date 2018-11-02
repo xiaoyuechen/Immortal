@@ -9,10 +9,13 @@ UBaseHealthBarWidgetComponent::UBaseHealthBarWidgetComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> HealthBarWidgetObj(TEXT("/Game/Immortal/UI/BP_BaseHealthBarWidget"));
-	if (HealthBarWidgetObj.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UClass> HealthBarWidgetFinder
+	(
+		TEXT("Class'/Game/Immortal/UI/BP_BaseHealthBarWidget.BP_BaseHealthBarWidget_C'")
+	);
+	if (HealthBarWidgetFinder.Succeeded())
 	{
-		SetWidgetClass(HealthBarWidgetObj.Class);
+		SetWidgetClass(HealthBarWidgetFinder.Object);
 	}
 
 	SetWidgetSpace(EWidgetSpace::Screen);
