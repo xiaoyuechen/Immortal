@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "BaseCharacter.h"
 #include "Character1.h"
+#include "ImmortalPlayerController.h"
 
 
 ACharacter1AIController::ACharacter1AIController()
@@ -58,7 +59,9 @@ void ACharacter1AIController::Tick(float DeltaSeconds)
 	}
 	else
 	{
-		MoveToActor(PlayerCharacter, AcceptanceRadius);
+		// TODO Acceptance radius
+		MovementDirectionMod = NormalizeDirection(VectorToPlayerCharacter.X);
+		PossessedCharacter->MoveRight(MovementDirectionMod);
 		if (VectorToPlayerCharacter.X > 0.f)
 		{
 			PossessedCharacter->SetActorRotation(FRotator(0.f, 0.f, 0.f));
@@ -67,16 +70,23 @@ void ACharacter1AIController::Tick(float DeltaSeconds)
 		{
 			PossessedCharacter->SetActorRotation(FRotator(0.f, 180.f, 0.f));
 		}
-		PossessedCharacter->Fire();
+		if (!PossessedCharacter->IsFrozen() && Distance < AttackRadius)
+		{
+			PossessedCharacter->Fire();
+
+		}
 	}
 }
 
 
 ABaseCharacter* ACharacter1AIController::GetPlayerCharacter() const
 {
-	auto PlayerController = GetWorld()->GetFirstPlayerController()->GetPawn();
+	auto PlayerController = GetWorld()->GetFirstPlayerController();
 	if (!PlayerController) { return nullptr; }
-	return Cast<ABaseCharacter>(PlayerController);
+	
+	if (!Cast<AImmortalPlayerController>(PlayerController)) { return nullptr; }
+	Cast<AImmortalPlayerController>(PlayerController)->OnSwap.AddUniqueDynamic(this, &ACharacter1AIController::OnPlayerSwap);
+	return Cast<ABaseCharacter>(PlayerController->GetPawn());
 }
 
 
@@ -84,6 +94,14 @@ void ACharacter1AIController::OnCharacterDeath()
 {
 	UnPossess();
 	Destroy(this);
+}
+
+void ACharacter1AIController::OnPlayerSwap()
+{
+	//auto PlayerController = GetWorld()->GetFirstPlayerController()->GetPawn();
+	//if (!PlayerController) { return; }
+	//PlayerController->OnSwap.RemoveDynamic(this, &ACharacter1AIController::OnPlayerSwap);
+	PlayerCharacter = GetPlayerCharacter();
 }
 
 void ACharacter1AIController::OnHit
@@ -96,4 +114,13 @@ void ACharacter1AIController::OnHit
 )
 {
 	MovementDirectionMod *= (-1);
+}
+
+float ACharacter1AIController::NormalizeDirection(float DirX)
+{
+	if (DirX > 0.f)
+	{
+		return 1.f;
+	}
+	return -1.f;
 }

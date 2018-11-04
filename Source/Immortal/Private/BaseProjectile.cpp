@@ -20,17 +20,16 @@ ABaseProjectile::ABaseProjectile()
 	SetRootComponent(CollisionMesh);
 	CollisionMesh->SetNotifyRigidBodyCollision(true);
 	CollisionMesh->SetVisibility(true);
-
-	DestroyDelay = 10.f;
-	ProjectileDamage = 5.f;
 }
 
 // Called when the game starts or when spawned
 void ABaseProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	ProjectileMovement->ProjectileGravityScale = 0.2f;
+	ProjectileMovement->ProjectileGravityScale = ProjectileGravityScale;
 	CollisionMesh->OnComponentHit.AddDynamic(this, &ABaseProjectile::OnHit);
+	FTimerHandle Timer;
+	GetWorld()->GetTimerManager().SetTimer(Timer, this, &ABaseProjectile::OnTimerExpire, DestroyDelay, false);
 
 }
 
@@ -54,8 +53,6 @@ void ABaseProjectile::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherAc
 		UDamageType::StaticClass()
 	);
 
-	FTimerHandle Timer;
-	GetWorld()->GetTimerManager().SetTimer(Timer, this, &ABaseProjectile::OnTimerExpire, DestroyDelay, false);
 }
 
 void ABaseProjectile::OnTimerExpire()

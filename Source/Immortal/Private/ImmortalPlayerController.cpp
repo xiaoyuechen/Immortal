@@ -3,7 +3,20 @@
 #include "ImmortalPlayerController.h"
 #include "BaseCharacter.h"
 #include "Engine/World.h"
+#include "UObject/ConstructorHelpers.h"
 
+AImmortalPlayerController::AImmortalPlayerController()
+{
+	static ConstructorHelpers::FObjectFinder<UClass> Character0BlueprintFinder
+	(
+		TEXT("Class'/Game/Immortal/Characters/Character0/BP_Character0.BP_Character0_C'")
+	);
+	if (Character0BlueprintFinder.Succeeded())
+	{
+		Character0Blueprint = Character0BlueprintFinder.Object;
+	}
+
+}
 
 void AImmortalPlayerController::SetPawn(APawn* InPawn)
 {
@@ -11,9 +24,9 @@ void AImmortalPlayerController::SetPawn(APawn* InPawn)
 
 	if (InPawn)
 	{
-		ControlledCharacter = Cast<ABaseCharacter>(InPawn);
-		if (!ensure(ControlledCharacter)) { return; }
-		ControlledCharacter->OnDeath.AddUniqueDynamic(this, &AImmortalPlayerController::OnCharacterDeath);
+		PossessedCharacter = Cast<ABaseCharacter>(InPawn);
+		if (!ensure(PossessedCharacter)) { return; }
+		PossessedCharacter->OnDeath.AddUniqueDynamic(this, &AImmortalPlayerController::OnCharacterDeath);
 	}
 }
 
@@ -35,12 +48,13 @@ void AImmortalPlayerController::SwapCharacter()
 {
 	ABaseCharacter* ClosestCharacter = Cast<ABaseCharacter>(GetClosestPawn());
 	if (!ClosestCharacter) { return; }
-	if (ClosestCharacter->GetHealthPercent() <= 0 && ControlledCharacter->GetHealthPercent() > 0)
+	if (ClosestCharacter->GetHealthPercent() <= 0 && PossessedCharacter->GetHealthPercent() > 0)
 	{
 		UnPossess();
-		ControlledCharacter->OnDeath.RemoveDynamic(this, &AImmortalPlayerController::OnCharacterDeath);
+		PossessedCharacter->OnDeath.RemoveDynamic(this, &AImmortalPlayerController::OnCharacterDeath);
 		Possess(ClosestCharacter);
 		SetPawn(ClosestCharacter);
+		OnSwap.Broadcast();
 
 		ClosestCharacter->ResetCharacter();
 	}
@@ -53,8 +67,26 @@ void AImmortalPlayerController::QuitGame()
 
 void AImmortalPlayerController::OnCharacterDeath()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Player Character Died"));
+	if (PossessedCharacter->IsA(Character0Blueprint))
+	{
+		OnCharacter0Death();
+	}
+	else
+	{
+		OnOtherCharacterDeadth();
+	}
 }
+
+void AImmortalPlayerController::OnCharacter0Death()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Character0 died"));
+}
+
+void AImmortalPlayerController::OnOtherCharacterDeadth()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Other Character died"));
+}
+
 
 APawn * AImmortalPlayerController::GetClosestPawn()
 {
@@ -63,10 +95,10 @@ APawn * AImmortalPlayerController::GetClosestPawn()
 	APawn* ClosestPawn = nullptr;
 	for (FConstPawnIterator Itr(GetWorld()->GetPawnIterator()); Itr; ++Itr)
 	{
-		if (Itr->Get() != ControlledCharacter)
+		if (Itr->Get() != PossessedCharacter)
 		{
 			OtherPawn = Itr->Get();
-			const float TempDistance = FVector::Dist(ControlledCharacter->GetActorLocation(), OtherPawn->GetActorLocation());
+			const float TempDistance = FVector::Dist(PossessedCharacter->GetActorLocation(), OtherPawn->GetActorLocation());
 			if (SwapRadius > TempDistance && ClosestDistance > TempDistance)
 			{
 				ClosestDistance = TempDistance;

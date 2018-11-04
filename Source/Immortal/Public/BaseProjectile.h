@@ -25,11 +25,14 @@ protected:
 
 	void OnTimerExpire();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Setup")
-	float DestroyDelay;
+	UPROPERTY(EditAnywhere, Category = "Setup")
+	float DestroyDelay = 1.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Setup")
-	float ProjectileDamage;
+	UPROPERTY(EditAnywhere, Category = "Setup")
+	float ProjectileDamage = 3.f;
+
+	UPROPERTY(EditAnywhere, Category = "Setup")
+	float ProjectileGravityScale = 0.2f;
 
 	class UProjectileMovementComponent* ProjectileMovement = nullptr;
 

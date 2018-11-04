@@ -5,7 +5,6 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/DamageType.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/CameraComponent.h"
@@ -63,12 +62,6 @@ ABaseCharacter::ABaseCharacter()
 	SideViewCameraComponent->ProjectionMode = ECameraProjectionMode::Orthographic;
 	SideViewCameraComponent->OrthoWidth = 2048.0f;
 	SideViewCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-
-	// Setup Character
-	StartingHealth = 10;
-	CurrentHealth = StartingHealth;
-	Damage = 3;
-	DamageRadius = 200;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -105,23 +98,34 @@ void ABaseCharacter::Tick(float DeltaSeconds)
 
 void ABaseCharacter::MoveRight(float Value)
 {
-	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
+	if (!IsFrozen())
+	{
+		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
+	}
+
 }
 
 void ABaseCharacter::Fire()
 {
-	UGameplayStatics::ApplyRadialDamage
-	(
-		this,
-		Damage,
-		GetActorLocation(),
-		DamageRadius,
-		UDamageType::StaticClass(),
-		{ this },
-		this
-	);
+	if (bFireMovementFreeze)
+	{
+		GetWorld()->GetTimerManager().SetTimer(FireMovementFreezeTimer, FireMovementFreezeTime, false);
+	}
 }
 
+bool ABaseCharacter::IsFrozen()
+{
+	if (!bFireMovementFreeze) 
+	{
+		return false;
+	}
+	else if (GetWorld()->GetTimerManager().GetTimerRate(FireMovementFreezeTimer) <= 0.f)
+	{
+		return false;
+	}
+
+	return true;
+}
 //////////////////////////////////////////////////////////////////////////
 // Take damage and broadcast when dead
 float ABaseCharacter::TakeDamage
@@ -155,6 +159,7 @@ void ABaseCharacter::ResetCharacter()
 ///////////////////////////////////////////////////////////////////////////
 // Getter Functions
 
+
 float ABaseCharacter::GetHealthPercent() const
 {
 	return (float)CurrentHealth / (float)StartingHealth;
@@ -170,8 +175,8 @@ void ABaseCharacter::UpdateCharacter()
 	UpdateAnimation();
 
 	// Now setup the rotation of the controller based on the direction we are travelling
-	const FVector PlayerVelocity = GetVelocity();
-	float TravelDirection = PlayerVelocity.X;
+	const FVector CharacterVelocity = GetVelocity();
+	float TravelDirection = CharacterVelocity.X;
 	// Set the rotation so that the character faces his direction of travel.
 	if (TravelDirection < 0.0f)
 	{
@@ -188,11 +193,11 @@ void ABaseCharacter::UpdateCharacter()
 
 void ABaseCharacter::UpdateAnimation()
 {
-	const FVector PlayerVelocity = GetVelocity();
+	const FVector CharacterVelocity = GetVelocity();
 
 	// Are we moving or standing still?
 
-	UPaperFlipbook* DesiredAnimation = (abs(PlayerVelocity.X) > 0.0f) ? RunningAnimation : IdleAnimation;
+	UPaperFlipbook* DesiredAnimation = (abs(CharacterVelocity.X) > 0.0f) ? RunningAnimation : IdleAnimation;
 	if (GetSprite()->GetFlipbook() != DesiredAnimation)
 	{
 		GetSprite()->SetFlipbook(DesiredAnimation);

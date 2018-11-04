@@ -35,13 +35,19 @@ protected:
 	float AcceptanceRadius = 300.f;
 
 	UPROPERTY(EditAnywhere, Category = "Setup")
-	float DetectRadius = 500;
+	float DetectRadius = 800.f;
 
 	UPROPERTY(EditAnywhere, Category = "Setup")
-	float MovementDirectionMod = 0.8f;
+	float AttackRadius = 800.f;
+
+	UPROPERTY(EditAnywhere, Category = "Setup")
+	float MovementDirectionMod = 1.f;
 
 	UFUNCTION()
 	virtual void OnCharacterDeath();
+
+	UFUNCTION()
+	virtual void OnPlayerSwap();
 
 	UFUNCTION()
 	virtual	void OnHit
@@ -52,6 +58,8 @@ protected:
 		FVector NormalImpulse,
 		const FHitResult& Hit
 	);
+
+	virtual float NormalizeDirection(float DirX);
 
 	ABaseCharacter* PossessedCharacter;
 	ABaseCharacter* PlayerCharacter;

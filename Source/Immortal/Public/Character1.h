@@ -15,9 +15,7 @@ class IMMORTAL_API ACharacter1 : public ABaseCharacter
 	GENERATED_BODY()
 	
 public:
-	ACharacter1();
 	virtual void BeginPlay() override;
-	//virtual void Tick(float DeltaSeconds) override;
 	
 protected:
 	UPROPERTY(EditAnywhere, Category = "Fire")

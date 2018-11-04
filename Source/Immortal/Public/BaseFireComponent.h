@@ -36,14 +36,14 @@ protected:
 	UClass* ProjectileBlueprint;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Setup")
-	int32 ProjectileNumber;
+	int32 ProjectileNumber = 9999999;
 
 	// The minimal interval between two projectile fires, in seconds
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Setup")
-	float WeaponCoolingTime;
+	float WeaponCoolingTime = 1.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Setup")
-	float LaunchSpeed;
+	float LaunchSpeed = 1000.f;
 
 	FTimerHandle Timer;
 
@@ -54,4 +54,5 @@ public:
 
 	virtual void Fire();
 	
+	EFiringState GetFiringState() const;
 };

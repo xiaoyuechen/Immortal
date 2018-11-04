@@ -17,10 +17,6 @@ UBaseFireComponent::UBaseFireComponent()
 	{
 		ProjectileBlueprint = ProjectileBlueprintFinder.Object;
 	}
-
-	ProjectileNumber = 999999;
-	WeaponCoolingTime = 0.5f;
-	LaunchSpeed = 1000;
 }
 
 
@@ -73,5 +69,10 @@ void UBaseFireComponent::Fire()
 		Projectile->LaunchProjectile(LaunchSpeed);
 		GetWorld()->GetTimerManager().SetTimer(Timer,WeaponCoolingTime,false);
 	}
+}
+
+EFiringState UBaseFireComponent::GetFiringState() const
+{
+	return FiringState;
 }
 

@@ -8,6 +8,15 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBaseCharacterDelegate);
 
+UENUM()
+enum class EActionState : uint8
+{
+	Idling,
+	Walking,
+	Jumping,
+	Firing,
+};
+
 /**
 * This class is the base character for Immortal, and it is responsible for all
 * physical interaction between the player and the world.
@@ -60,8 +69,6 @@ protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
-
-
 	/** Called by the engined when actor damage is dealt */
 	float TakeDamage
 	(
@@ -73,27 +80,31 @@ protected:
 
 
 	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
-		int32 StartingHealth;
+	int32 StartingHealth = 10;
 
 	UPROPERTY(VisibleAnywhere, Category = "CharacterSetup")
-		int32 CurrentHealth;
+	int32 CurrentHealth;
+
+	// Disable movement when firing
+	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
+	bool bFireMovementFreeze = true;
 
 	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
-		float Damage;
+	float FireMovementFreezeTime = 0.1f;
 
-	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
-		float DamageRadius;
+	FTimerHandle FireMovementFreezeTimer;
 
 public:
 
 
 	// Returns current health as a percentage of starting health, between 0 and 1
 	UFUNCTION(BlueprintPure, Category = "Health")
-		float GetHealthPercent() const;
+	float GetHealthPercent() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Reset")
-		void ResetCharacter();
+	void ResetCharacter();
 
+	virtual bool IsFrozen();
 
 	FBaseCharacterDelegate OnDeath;
 
