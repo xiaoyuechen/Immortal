@@ -78,3 +78,4 @@ Content/*
 
 # Don't ignore project contents
 !Content/Immortal
+!Content/Immortal_Johan
