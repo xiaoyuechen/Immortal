@@ -1,49 +1,110 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ImmortalPlayerController.h"
+#include "BaseCharacter.h"
+#include "Engine/World.h"
+#include "UObject/ConstructorHelpers.h"
 
-void AImmortalPlayerController::BeginPlay()
+AImmortalPlayerController::AImmortalPlayerController()
 {
-	Super::BeginPlay();
-	APaperCharacter* ControlledCharacter = GetControlledCharacter();
-	if (!ControlledCharacter)
+	static ConstructorHelpers::FObjectFinder<UClass> Character0BlueprintFinder
+	(
+		TEXT("Class'/Game/Immortal/Characters/Character0/BP_Character0.BP_Character0_C'")
+	);
+	if (Character0BlueprintFinder.Succeeded())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Player controller is not controlling any character."));
+		Character0Blueprint = Character0BlueprintFinder.Object;
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player controller is controlling %s."), *ControlledCharacter->GetName());
-	}
-}
 
-
-ADefaultCharacter* AImmortalPlayerController::GetControlledCharacter() const
-{
-	return Cast<ADefaultCharacter>(GetPawn());
 }
 
 void AImmortalPlayerController::SetPawn(APawn* InPawn)
 {
 	Super::SetPawn(InPawn);
+
 	if (InPawn)
 	{
-		auto ControlledCharacter = Cast<ADefaultCharacter>(InPawn);
-		if (!ensure(ControlledCharacter)) { return; }
-		ControlledCharacter->OnDeath.AddUniqueDynamic(this, &AImmortalPlayerController::OnCharacterDeath);
+		PossessedCharacter = Cast<ABaseCharacter>(InPawn);
+		if (!ensure(PossessedCharacter)) { return; }
+		PossessedCharacter->OnDeath.AddUniqueDynamic(this, &AImmortalPlayerController::OnCharacterDeath);
 	}
 }
 
+void AImmortalPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+	InputComponent->BindAction("Swap", IE_Pressed, this, &AImmortalPlayerController::SwapCharacter);
+	InputComponent->BindAction("Exit", IE_Pressed, this, &AImmortalPlayerController::QuitGame);
+
+}
+
+void AImmortalPlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+}
+
+
 void AImmortalPlayerController::SwapCharacter()
 {
-	//auto ControlledCharacter = GetControlledCharacter();
-	//if (!ensure(ControlledCharacter)) { return; }
-	//TArray<AActor*> ActorsToSwap = ControlledCharacter->SwapRange->GetOverlappingActors();
+	ABaseCharacter* ClosestCharacter = Cast<ABaseCharacter>(GetClosestPawn());
+	if (!ClosestCharacter) { return; }
+	if (ClosestCharacter->GetHealthPercent() <= 0 && PossessedCharacter->GetHealthPercent() > 0)
+	{
+		UnPossess();
+		PossessedCharacter->OnDeath.RemoveDynamic(this, &AImmortalPlayerController::OnCharacterDeath);
+		Possess(ClosestCharacter);
+		SetPawn(ClosestCharacter);
+		OnSwap.Broadcast();
+
+		ClosestCharacter->ResetCharacter();
+	}
+}
+
+void AImmortalPlayerController::QuitGame()
+{
+	ConsoleCommand("quit");
 }
 
 void AImmortalPlayerController::OnCharacterDeath()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Character Died"));
+	if (PossessedCharacter->IsA(Character0Blueprint))
+	{
+		OnCharacter0Death();
+	}
+	else
+	{
+		OnOtherCharacterDeadth();
+	}
+}
+
+void AImmortalPlayerController::OnCharacter0Death()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Character0 died"));
+}
+
+void AImmortalPlayerController::OnOtherCharacterDeadth()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Other Character died"));
 }
 
 
-
+APawn * AImmortalPlayerController::GetClosestPawn()
+{
+	float ClosestDistance = SwapRadius;
+	APawn* OtherPawn = nullptr;
+	APawn* ClosestPawn = nullptr;
+	for (FConstPawnIterator Itr(GetWorld()->GetPawnIterator()); Itr; ++Itr)
+	{
+		if (Itr->Get() != PossessedCharacter)
+		{
+			OtherPawn = Itr->Get();
+			const float TempDistance = FVector::Dist(PossessedCharacter->GetActorLocation(), OtherPawn->GetActorLocation());
+			if (SwapRadius > TempDistance && ClosestDistance > TempDistance)
+			{
+				ClosestDistance = TempDistance;
+				ClosestPawn = OtherPawn;
+			}
+		}
+	}
+	return ClosestPawn;
+}
