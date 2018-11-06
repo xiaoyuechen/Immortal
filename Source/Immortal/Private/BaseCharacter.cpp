@@ -1,7 +1,6 @@
 // Copyright J&J.
 
 #include "BaseCharacter.h"
-#include "PaperFlipbookComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -19,6 +18,9 @@ ABaseCharacter::ABaseCharacter()
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
 
+	// Set size for collision capsule
+	GetCapsuleComponent()->InitCapsuleSize(41.f, 46.0f);
+
 	// Configure character movement
 	GetCharacterMovement()->GravityScale = 8.0f;
 	GetCharacterMovement()->AirControl = 0.80f;
@@ -26,13 +28,6 @@ ABaseCharacter::ABaseCharacter()
 	GetCharacterMovement()->GroundFriction = 10.0f;
 	GetCharacterMovement()->MaxWalkSpeed = 800.0f;
 	GetCharacterMovement()->MaxFlySpeed = 1000.0f;
-
-	// Lock character motion onto the XZ plane, so the character can't move in or out of the screen
-	GetCharacterMovement()->bConstrainToPlane = true;
-	GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0.0f, -1.0f, 0.0f));
-
-	// Enable replication on the Sprite component so animations show up when networked
-	bReplicates = true;
 
 	// Create a camera boom attached to the root (capsule)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -52,26 +47,21 @@ ABaseCharacter::ABaseCharacter()
 
 void ABaseCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
-	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	InputComponent->BindAxis("MoveRight", this, &ABaseCharacter::MoveRight);
-	InputComponent->BindAction("Fire", IE_Pressed, this, &ABaseCharacter::Fire);
-	
+	// follow camera control
 	InputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	InputComponent->BindAxis("TurnRate", this, &ABaseCharacter::TurnAtRate);
 	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	InputComponent->BindAxis("LookUpRate", this, &ABaseCharacter::LookUpAtRate);
+
+	// action control
+	InputComponent->BindAxis("MoveForward", this, &ABaseCharacter::MoveForward);
+	InputComponent->BindAxis("MoveRight", this, &ABaseCharacter::MoveRight);
+	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	InputComponent->BindAction("Fire", IE_Pressed, this, &ABaseCharacter::Fire);
+	
 }
 
-void ABaseCharacter::TurnAtRate(float Rate)
-{
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-}
-
-void ABaseCharacter::LookUpAtRate(float Rate)
-{
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
-}
 
 ////////////////////////////////////////////////////////////////////////////
 // BeginPlay() and Tick()
@@ -91,15 +81,43 @@ void ABaseCharacter::Tick(float DeltaSeconds)
 //////////////////////////////////////////////////////////////////////////
 // Player callable character actions
 
+void ABaseCharacter::TurnAtRate(float Rate)
+{
+	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+}
+
+void ABaseCharacter::LookUpAtRate(float Rate)
+{
+	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void ABaseCharacter::MoveForward(float Value)
+{
+	if ((Controller) && (Value != 0.0f))
+	{
+		// find out which way is forward
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		AddMovementInput(Direction, Value);
+	}
+}
+
 void ABaseCharacter::MoveRight(float Value)
 {
-	if (!IsFrozen())
+	if ((Controller) && (Value != 0.0f))
 	{
-		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get right vector
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		AddMovementInput(Direction, Value);
 	}
 
 }
-
 void ABaseCharacter::Fire()
 {
 	if (bFireMovementFreeze)
@@ -107,6 +125,7 @@ void ABaseCharacter::Fire()
 		GetWorld()->GetTimerManager().SetTimer(FireMovementFreezeTimer, FireMovementFreezeTime, false);
 	}
 }
+
 
 bool ABaseCharacter::IsFrozen()
 {

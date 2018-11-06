@@ -40,18 +40,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
 	virtual void Fire();
 
+	/** Called for forwards/backward input */
+	void MoveForward(float Value);
+
 	/** Called to move right */
 	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
 	virtual void MoveRight(float Value);
-
-protected:
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
-
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
 
 	/**
 	* Called via input to turn at a given rate.
@@ -66,6 +60,16 @@ protected:
 	void LookUpAtRate(float Rate);
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+
+protected:
+	/** Camera boom positioning the camera behind the character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* CameraBoom;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* FollowCamera;
+
 
 	/** Called by the engined when actor damage is dealt */
 	float TakeDamage

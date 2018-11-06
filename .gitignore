@@ -79,3 +79,6 @@ Content/*
 # Don't ignore project contents
 !Content/Immortal
 !Content/Immortal_Johan
+
+# Ignore sample project codes
+Source/Immortal/TP_ThirdPerson
