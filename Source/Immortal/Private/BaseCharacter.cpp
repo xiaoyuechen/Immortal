@@ -32,7 +32,8 @@ ABaseCharacter::ABaseCharacter()
 	// Create a camera boom attached to the root (capsule)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 500.0f;
+	CameraBoom->TargetArmLength = 300.0f;
+	CameraBoom->SocketOffset = FVector(0.f,0.f,50.f);
 	CameraBoom->bUsePawnControlRotation = true;
 
 	// Create an orthographic camera (no perspective) and attach it to the boom

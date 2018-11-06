@@ -32,25 +32,37 @@ protected:
 	EFiringState FiringState;
 
 	// Decides which projectile to launch
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Setup")
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	UClass* ProjectileBlueprint;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Setup")
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	int32 ProjectileNumber = 9999999;
 
 	// The minimal interval between two projectile fires, in seconds
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Setup")
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	float WeaponCoolingTime = 1.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Setup")
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	float LaunchSpeed = 1000.f;
+
+	// At whose location projectiles are spawned
+	UPROPERTY(EditDefaultsOnly, Category = Mesh)
+	class USceneComponent* Muzzle;
+
+	/** Sound to play each time we fire */
+	UPROPERTY(EditAnywhere, Category = "Setup")
+	class USoundBase* FireSound;
 
 	FTimerHandle Timer;
 
+	UFUNCTION(BlueprintCallable, Category = "WeaponSetup")
+	void Initialise(USceneComponent* MuzzleToSet);
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	virtual void AimAt() {}
 
 	virtual void Fire();
 	

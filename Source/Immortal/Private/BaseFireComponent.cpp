@@ -3,6 +3,8 @@
 #include "BaseFireComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "BaseProjectile.h"
+#include "Kismet/GameplayStatics.h"
+
 
 UBaseFireComponent::UBaseFireComponent()
 {
@@ -17,8 +19,13 @@ UBaseFireComponent::UBaseFireComponent()
 	{
 		ProjectileBlueprint = ProjectileBlueprintFinder.Object;
 	}
+
 }
 
+void UBaseFireComponent::Initialise(USceneComponent * MuzzleToSet)
+{
+	Muzzle = MuzzleToSet;
+}
 
 // Called when the game starts
 void UBaseFireComponent::BeginPlay()
@@ -28,6 +35,7 @@ void UBaseFireComponent::BeginPlay()
 	FiringState = EFiringState::Ready;
 	
 }
+
 
 
 // Called every frame
@@ -56,18 +64,32 @@ void UBaseFireComponent::Fire()
 
 	if (FiringState == EFiringState::Ready)
 	{
-		FVector OwnerLocation = GetOwner()->GetActorLocation();
-		FVector SpawnLocation = FVector(OwnerLocation.X, OwnerLocation.Y, OwnerLocation.Z + 110.f);
+		if (!ensure(Muzzle)) { return; }
+		FVector SpawnLocation = Muzzle->GetComponentLocation();
+		FRotator SpawnRotation = Muzzle->GetComponentRotation();
+
+		//Set Spawn Collision Handling Override
+		FActorSpawnParameters ActorSpawnParams;
+		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
 		auto Projectile = GetWorld()->
 			SpawnActor<ABaseProjectile>
 			(
 				ProjectileBlueprint,
 				SpawnLocation,
-				GetOwner()->GetActorRotation()
+				SpawnRotation,
+				ActorSpawnParams
 			);
+
 		if (!ensure(Projectile)) { return; }
 		Projectile->LaunchProjectile(LaunchSpeed);
 		GetWorld()->GetTimerManager().SetTimer(Timer,WeaponCoolingTime,false);
+
+		// try and play the sound if specified
+		if (FireSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, FireSound, SpawnLocation);
+		}
 	}
 }
 
