@@ -15,7 +15,7 @@ class IMMORTAL_API ACharacter0 : public ABaseCharacter
 	GENERATED_BODY()
 	
 public:
-	
+	virtual void Tick(float DeltaSeconds) override;
 protected:
 	virtual void Fire() override;
 
@@ -24,4 +24,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
 	float DamageRadius = 200.f;
+
+	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
+	float WeaponCooldownTime = 1.f;
+
+	void DrawFiringSphere();
+
+	FTimerHandle CooldownTimer;
 };

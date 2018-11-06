@@ -40,6 +40,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
 	virtual void Fire();
 
+	/** Called to stop firing */
+	UFUNCTION(BlueprintCallable, Category = "CharacterActions")
+	virtual void StopFiring();
+
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
 
@@ -102,6 +106,8 @@ protected:
 	float FireMovementFreezeTime = 0.1f;
 
 	FTimerHandle FireMovementFreezeTimer;
+
+	bool bIsFiring = false;
 
 public:
 

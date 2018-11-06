@@ -59,6 +59,8 @@ void ABaseCharacter::SetupPlayerInputComponent(class UInputComponent* InputCompo
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	InputComponent->BindAction("Fire", IE_Pressed, this, &ABaseCharacter::Fire);
+	InputComponent->BindAction("Fire", IE_Released, this, &ABaseCharacter::StopFiring);
+
 	
 }
 
@@ -78,6 +80,7 @@ void ABaseCharacter::Tick(float DeltaSeconds)
 }
 
 
+
 //////////////////////////////////////////////////////////////////////////
 // Player callable character actions
 
@@ -89,6 +92,16 @@ void ABaseCharacter::TurnAtRate(float Rate)
 void ABaseCharacter::LookUpAtRate(float Rate)
 {
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void ABaseCharacter::Fire()
+{
+	bIsFiring = true;
+}
+
+void ABaseCharacter::StopFiring()
+{
+	bIsFiring = false;
 }
 
 void ABaseCharacter::MoveForward(float Value)
@@ -117,13 +130,6 @@ void ABaseCharacter::MoveRight(float Value)
 		AddMovementInput(Direction, Value);
 	}
 
-}
-void ABaseCharacter::Fire()
-{
-	if (bFireMovementFreeze)
-	{
-		GetWorld()->GetTimerManager().SetTimer(FireMovementFreezeTimer, FireMovementFreezeTime, false);
-	}
 }
 
 
