@@ -109,12 +109,16 @@ void AImmortalPlayerController::AimTowardsCrossHead()
 	if (GetSightRayHitLocation(OutHitLocation))
 	{
 		FireComponent->RotateGunTowardsLocation(OutHitLocation);
+		UE_LOG(LogTemp, Warning, TEXT("Using Location"));
+
 	}
 	else
 	{
 		FVector OutLookDirection;
 		GetLookDirection(OutLookDirection);
 		FireComponent->RotateGunTowardsDirection(OutLookDirection);
+		UE_LOG(LogTemp, Warning, TEXT("Using Look Direction"));
+
 	}
 }
 

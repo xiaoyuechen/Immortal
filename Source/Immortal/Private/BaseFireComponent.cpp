@@ -94,14 +94,12 @@ void UBaseFireComponent::AimAt(FVector Location)
 
 void UBaseFireComponent::RotateGunTowardsDirection(FVector Direction)
 {
-	FRotator CorrectRotator(Gun->GetComponentRotation().Pitch, Gun->GetComponentRotation().Yaw, -Direction.Rotation().Pitch);
-	UE_LOG(LogTemp, Warning, TEXT("GunRotator: %s"), *Direction.Rotation().ToString());
-	Gun->SetWorldRotation(CorrectRotator);
+	Gun->SetWorldRotation(Direction.Rotation());
 }
 
 void UBaseFireComponent::RotateGunTowardsLocation(FVector Location)
 {
-	FVector AimDirection = Location - Muzzle->GetComponentLocation();
+	FVector AimDirection = Location - Gun->GetComponentLocation();
 	RotateGunTowardsDirection(AimDirection);
 }
 
