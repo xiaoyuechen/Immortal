@@ -11,15 +11,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"AIModule",
-				"Paper2D",
 				"UMG"
 			]
-		}
-	],
-	"Plugins": [
-		{
-			"Name": "Paper2D",
-			"Enabled": true
 		}
 	]
 }
