@@ -45,6 +45,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	float LaunchSpeed = 1000.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = Mesh)
+	class UStaticMeshComponent* Gun;
+
 	// At whose location projectiles are spawned
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
 	class USceneComponent* Muzzle;
@@ -55,14 +58,18 @@ protected:
 
 	FTimerHandle Timer;
 
+	FVector AimDirection;
+
 	UFUNCTION(BlueprintCallable, Category = "WeaponSetup")
-	void Initialise(USceneComponent* MuzzleToSet);
+	void Initialise(USceneComponent* MuzzleToSet, UStaticMeshComponent* GunToSet);
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	virtual void AimAt() {}
+	virtual void AimAt(FVector Location);
+
+	virtual void MoveGunTowards(FVector Direction);
 
 	virtual void Fire();
 	

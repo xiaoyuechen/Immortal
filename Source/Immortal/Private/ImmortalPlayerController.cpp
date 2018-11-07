@@ -4,6 +4,7 @@
 #include "BaseCharacter.h"
 #include "Engine/World.h"
 #include "UObject/ConstructorHelpers.h"
+#include "BaseFireComponent.h"
 
 AImmortalPlayerController::AImmortalPlayerController()
 {
@@ -30,6 +31,13 @@ void AImmortalPlayerController::SetPawn(APawn* InPawn)
 	}
 }
 
+void AImmortalPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	if (!PossessedCharacter) { return; }
+	PossessedCharacter->FindComponentByClass<UBaseFireComponent>();
+}
+
 void AImmortalPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -41,6 +49,7 @@ void AImmortalPlayerController::SetupInputComponent()
 void AImmortalPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	AimTowardsCrossHead();
 }
 
 
@@ -67,6 +76,7 @@ void AImmortalPlayerController::QuitGame()
 
 void AImmortalPlayerController::OnCharacterDeath()
 {
+	if (!Character0Blueprint) { return; }
 	if (PossessedCharacter->IsA(Character0Blueprint))
 	{
 		OnCharacter0Death();
@@ -85,6 +95,11 @@ void AImmortalPlayerController::OnCharacter0Death()
 void AImmortalPlayerController::OnOtherCharacterDeadth()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Other Character died"));
+}
+
+void AImmortalPlayerController::AimTowardsCrossHead()
+{
+
 }
 
 

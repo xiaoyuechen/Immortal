@@ -4,6 +4,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "BaseProjectile.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/StaticMeshComponent.h"
 
 
 UBaseFireComponent::UBaseFireComponent()
@@ -22,9 +23,10 @@ UBaseFireComponent::UBaseFireComponent()
 
 }
 
-void UBaseFireComponent::Initialise(USceneComponent * MuzzleToSet)
+void UBaseFireComponent::Initialise(USceneComponent * MuzzleToSet, UStaticMeshComponent* GunToSet)
 {
 	Muzzle = MuzzleToSet;
+	Gun = GunToSet;
 }
 
 // Called when the game starts
@@ -56,6 +58,35 @@ void UBaseFireComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 		FiringState = EFiringState::Ready;
 	}
 
+}
+
+void UBaseFireComponent::AimAt(FVector Location)
+{
+	if (!ensure(Gun) || !ensure(Muzzle)) { return; }
+
+	FVector OutLaunchVelocity;
+	FVector StartLocation = Muzzle->GetComponentLocation();
+	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity
+	(
+		this,
+		OutLaunchVelocity,
+		StartLocation,
+		Location,
+		LaunchSpeed,
+		false,
+		0,
+		0,
+		ESuggestProjVelocityTraceOption::DoNotTrace
+	);
+
+	AimDirection = OutLaunchVelocity.GetSafeNormal();
+	MoveGunTowards(AimDirection);
+}
+
+void UBaseFireComponent::MoveGunTowards(FVector Direction)
+{
+
+	Gun->SetWorldRotation(Direction.Rotation());
 }
 
 void UBaseFireComponent::Fire()
