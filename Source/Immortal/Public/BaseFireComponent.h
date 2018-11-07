@@ -69,7 +69,9 @@ public:
 
 	virtual void AimAt(FVector Location);
 
-	virtual void MoveGunTowards(FVector Direction);
+	virtual void RotateGunTowardsDirection(FVector Direction);
+
+	virtual void RotateGunTowardsLocation(FVector Location);
 
 	virtual void Fire();
 	

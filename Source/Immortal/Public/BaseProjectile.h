@@ -16,6 +16,8 @@ public:
 	ABaseProjectile();
 
 	void LaunchProjectile(float Speed);
+
+	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovementComponent() const { return ProjectileMovement; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -31,9 +33,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Setup")
 	float ProjectileDamage = 3.f;
 
-	UPROPERTY(EditAnywhere, Category = "Setup")
-	float ProjectileGravityScale = 0.2f;
-
+	UPROPERTY(VisibleAnywhere, Category = Movement)
 	class UProjectileMovementComponent* ProjectileMovement = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")

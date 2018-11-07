@@ -35,7 +35,7 @@ void AImmortalPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	if (!PossessedCharacter) { return; }
-	PossessedCharacter->FindComponentByClass<UBaseFireComponent>();
+	FireComponent = PossessedCharacter->FindComponentByClass<UBaseFireComponent>();
 }
 
 void AImmortalPlayerController::SetupInputComponent()
@@ -56,13 +56,16 @@ void AImmortalPlayerController::Tick(float DeltaSeconds)
 void AImmortalPlayerController::SwapCharacter()
 {
 	ABaseCharacter* ClosestCharacter = Cast<ABaseCharacter>(GetClosestPawn());
-	if (!ClosestCharacter) { return; }
+	if (!(ClosestCharacter&&PossessedCharacter)) { return; }
 	if (ClosestCharacter->GetHealthPercent() <= 0 && PossessedCharacter->GetHealthPercent() > 0)
 	{
 		UnPossess();
 		PossessedCharacter->OnDeath.RemoveDynamic(this, &AImmortalPlayerController::OnCharacterDeath);
 		Possess(ClosestCharacter);
 		SetPawn(ClosestCharacter);
+
+		FireComponent = PossessedCharacter->FindComponentByClass<UBaseFireComponent>();
+
 		OnSwap.Broadcast();
 
 		ClosestCharacter->ResetCharacter();
@@ -99,7 +102,68 @@ void AImmortalPlayerController::OnOtherCharacterDeadth()
 
 void AImmortalPlayerController::AimTowardsCrossHead()
 {
+	if (!FireComponent) { return; }
 
+	
+	FVector OutHitLocation;
+	if (GetSightRayHitLocation(OutHitLocation))
+	{
+		FireComponent->RotateGunTowardsLocation(OutHitLocation);
+	}
+	else
+	{
+		FVector OutLookDirection;
+		GetLookDirection(OutLookDirection);
+		FireComponent->RotateGunTowardsDirection(OutLookDirection);
+	}
+}
+
+bool AImmortalPlayerController::GetSightRayHitLocation(FVector &HitLocation) const
+{
+	FVector LookDirection;
+	if (GetLookDirection(LookDirection))
+	{
+		// Line-trace along that LookDirection, and see what we hit (up to max range)
+		return GetLookVectorHitLocation(LookDirection, HitLocation);
+	}
+	return false;
+}
+
+bool AImmortalPlayerController::GetLookDirection(FVector & LookDirection) const
+{
+	// Find the crosshair position in pixel coordinates
+	int32 ViewportSizeX, ViewportSizeY;
+	GetViewportSize(ViewportSizeX, ViewportSizeY);
+	auto ScreenLocation = FVector2D(ViewportSizeX * CrosshairXLocation, ViewportSizeY * CrosshairYLocation);
+	FVector CameraWorldLocation; // To be discarded
+	// "De-project" the screen position of the crosshair to a world direction
+	return  DeprojectScreenPositionToWorld(
+		ScreenLocation.X,
+		ScreenLocation.Y,
+		CameraWorldLocation,
+		LookDirection
+	);
+}
+
+bool AImmortalPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVector & HitLocation) const
+{
+	FHitResult HitResult;
+	auto StartLocation = PlayerCameraManager->GetCameraLocation();
+	auto EndLocation = StartLocation + (LookDirection * LineTraceRange);
+	if (GetWorld()->
+		LineTraceSingleByChannel(
+		HitResult,
+		StartLocation,
+		EndLocation,
+		ECollisionChannel::ECC_Camera)
+		)
+	{
+		HitLocation = HitResult.Location;
+		UE_LOG(LogTemp, Warning, TEXT("LineTraceHitLocation: %s"), *HitLocation.ToString());
+		return true;
+	}
+	HitLocation = FVector(0);
+	return false; // Line trace didn't succeed
 }
 
 

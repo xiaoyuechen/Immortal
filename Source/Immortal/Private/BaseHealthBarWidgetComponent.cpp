@@ -32,7 +32,7 @@ void UBaseHealthBarWidgetComponent::BeginPlay()
 		auto ParentCharacter = Cast<ABaseCharacter>(GetOwner());
 		if (ParentCharacter)
 		{
-			Cast<UBaseHealthBarWidget>(GetUserWidgetObject())->SetParentCharacter(ParentCharacter);
+			Cast<UBaseHealthBarWidget>(Widget)->SetParentCharacter(ParentCharacter);
 		}
 	}
 

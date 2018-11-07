@@ -5,6 +5,7 @@
 #include "BaseProjectile.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/StaticMeshComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 
 UBaseFireComponent::UBaseFireComponent()
@@ -62,10 +63,15 @@ void UBaseFireComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void UBaseFireComponent::AimAt(FVector Location)
 {
-	if (!ensure(Gun) || !ensure(Muzzle)) { return; }
+	if (!ensure(Gun && Muzzle && ProjectileBlueprint)) { return; }
 
 	FVector OutLaunchVelocity;
 	FVector StartLocation = Muzzle->GetComponentLocation();
+	
+	auto ProjectileBlueprintObj = NewObject<ABaseProjectile>(this, ProjectileBlueprint);
+	if (!ProjectileBlueprintObj) { return; }
+	if (!ProjectileBlueprintObj->GetProjectileMovementComponent()) { return; }
+	float GravityZ = ProjectileBlueprintObj->GetProjectileMovementComponent()->GetGravityZ();
 	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity
 	(
 		this,
@@ -75,18 +81,28 @@ void UBaseFireComponent::AimAt(FVector Location)
 		LaunchSpeed,
 		false,
 		0,
-		0,
+		GravityZ,
 		ESuggestProjVelocityTraceOption::DoNotTrace
 	);
 
-	AimDirection = OutLaunchVelocity.GetSafeNormal();
-	MoveGunTowards(AimDirection);
+	if (bHaveAimSolution)
+	{
+		AimDirection = OutLaunchVelocity.GetSafeNormal();
+		RotateGunTowardsDirection(AimDirection);
+	}
 }
 
-void UBaseFireComponent::MoveGunTowards(FVector Direction)
+void UBaseFireComponent::RotateGunTowardsDirection(FVector Direction)
 {
+	FRotator CorrectRotator(Gun->GetComponentRotation().Pitch, Gun->GetComponentRotation().Yaw, -Direction.Rotation().Pitch);
+	UE_LOG(LogTemp, Warning, TEXT("GunRotator: %s"), *Direction.Rotation().ToString());
+	Gun->SetWorldRotation(CorrectRotator);
+}
 
-	Gun->SetWorldRotation(Direction.Rotation());
+void UBaseFireComponent::RotateGunTowardsLocation(FVector Location)
+{
+	FVector AimDirection = Location - Muzzle->GetComponentLocation();
+	RotateGunTowardsDirection(AimDirection);
 }
 
 void UBaseFireComponent::Fire()

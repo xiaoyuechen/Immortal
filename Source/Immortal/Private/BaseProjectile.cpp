@@ -26,7 +26,6 @@ ABaseProjectile::ABaseProjectile()
 void ABaseProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	ProjectileMovement->ProjectileGravityScale = ProjectileGravityScale;
 	CollisionMesh->OnComponentHit.AddDynamic(this, &ABaseProjectile::OnHit);
 	FTimerHandle Timer;
 	GetWorld()->GetTimerManager().SetTimer(Timer, this, &ABaseProjectile::OnTimerExpire, DestroyDelay, false);

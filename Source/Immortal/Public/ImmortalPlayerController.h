@@ -38,6 +38,12 @@ protected:
 	void OnOtherCharacterDeadth();
 	void AimTowardsCrossHead();
 
+	// Return an OUT parameter, true if hit landscape
+	bool GetSightRayHitLocation(FVector& OutHitLocation) const;
+
+	bool GetLookDirection(FVector& LookDirection) const;
+	bool GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation) const;
+
 private:
 	UFUNCTION()
 	void OnCharacterDeath();
@@ -52,6 +58,14 @@ private:
 	class UBaseFireComponent* FireComponent;
 
 	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
-	float SwapRadius = 200;
+	float SwapRadius = 200.f;
 
+	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
+	float LineTraceRange = 1000000.f;
+
+	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
+	float CrosshairXLocation = 0.5f;
+
+	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
+	float CrosshairYLocation = 0.33333f;
 };
