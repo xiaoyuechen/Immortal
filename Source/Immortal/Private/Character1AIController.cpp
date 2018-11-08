@@ -50,32 +50,32 @@ void ACharacter1AIController::BeginPlay()
 void ACharacter1AIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if (!(PossessedCharacter&&PlayerCharacter)) { return; }
-	FVector VectorToPlayerCharacter = PlayerCharacter->GetActorLocation()- PossessedCharacter->GetActorLocation();
-	float Distance = (VectorToPlayerCharacter).Size();
-	if (Distance > DetectRadius)
-	{
-		PossessedCharacter->MoveRight(MovementDirectionMod);
-	}
-	else
-	{
-		// TODO Acceptance radius
-		MovementDirectionMod = NormalizeDirection(VectorToPlayerCharacter.X);
-		PossessedCharacter->MoveRight(MovementDirectionMod);
-		if (VectorToPlayerCharacter.X > 0.f)
-		{
-			PossessedCharacter->SetActorRotation(FRotator(0.f, 0.f, 0.f));
-		}
-		else
-		{
-			PossessedCharacter->SetActorRotation(FRotator(0.f, 180.f, 0.f));
-		}
-		if (!PossessedCharacter->IsFrozen() && Distance < AttackRadius)
-		{
-			PossessedCharacter->Fire();
+	//if (!(PossessedCharacter&&PlayerCharacter)) { return; }
+	//FVector VectorToPlayerCharacter = PlayerCharacter->GetActorLocation()- PossessedCharacter->GetActorLocation();
+	//float Distance = (VectorToPlayerCharacter).Size();
+	//if (Distance > DetectRadius)
+	//{
+	//	PossessedCharacter->MoveRight(MovementDirectionMod);
+	//}
+	//else
+	//{
+	//	// TODO Acceptance radius
+	//	MovementDirectionMod = NormalizeDirection(VectorToPlayerCharacter.X);
+	//	PossessedCharacter->MoveRight(MovementDirectionMod);
+	//	if (VectorToPlayerCharacter.X > 0.f)
+	//	{
+	//		PossessedCharacter->SetActorRotation(FRotator(0.f, 0.f, 0.f));
+	//	}
+	//	else
+	//	{
+	//		PossessedCharacter->SetActorRotation(FRotator(0.f, 180.f, 0.f));
+	//	}
+	//	if (!PossessedCharacter->IsFrozen() && Distance < AttackRadius)
+	//	{
+	//		PossessedCharacter->Fire();
 
-		}
-	}
+	//	}
+	//}
 }
 
 
@@ -104,8 +104,7 @@ void ACharacter1AIController::OnPlayerSwap()
 	PlayerCharacter = GetPlayerCharacter();
 }
 
-void ACharacter1AIController::OnHit
-(
+void ACharacter1AIController::OnHit(
 	UPrimitiveComponent * HitComponent,
 	AActor * OtherActor,
 	UPrimitiveComponent * OtherComponent,
@@ -113,7 +112,6 @@ void ACharacter1AIController::OnHit
 	const FHitResult & Hit
 )
 {
-	MovementDirectionMod *= (-1);
 }
 
 float ACharacter1AIController::NormalizeDirection(float DirX)

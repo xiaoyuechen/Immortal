@@ -109,7 +109,7 @@ void AImmortalPlayerController::AimTowardsCrossHead()
 	if (GetSightRayHitLocation(OutHitLocation))
 	{
 		FireComponent->RotateGunTowardsLocation(OutHitLocation);
-		UE_LOG(LogTemp, Warning, TEXT("Using Location"));
+		//UE_LOG(LogTemp, Warning, TEXT("Using Location"));
 
 	}
 	else
@@ -117,7 +117,7 @@ void AImmortalPlayerController::AimTowardsCrossHead()
 		FVector OutLookDirection;
 		GetLookDirection(OutLookDirection);
 		FireComponent->RotateGunTowardsDirection(OutLookDirection);
-		UE_LOG(LogTemp, Warning, TEXT("Using Look Direction"));
+		//UE_LOG(LogTemp, Warning, TEXT("Using Look Direction"));
 
 	}
 }
@@ -163,7 +163,7 @@ bool AImmortalPlayerController::GetLookVectorHitLocation(FVector LookDirection, 
 		)
 	{
 		HitLocation = HitResult.Location;
-		UE_LOG(LogTemp, Warning, TEXT("LineTraceHitLocation: %s"), *HitLocation.ToString());
+		//UE_LOG(LogTemp, Warning, TEXT("LineTraceHitLocation: %s"), *HitLocation.ToString());
 		return true;
 	}
 	HitLocation = FVector(0);
