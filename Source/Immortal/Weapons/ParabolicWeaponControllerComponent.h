@@ -67,10 +67,13 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(BlueprintCallable, Category = Weapon)
 	virtual void AimAt(FVector Location);
 
+	UFUNCTION(BlueprintCallable, Category = Weapon)
 	virtual void RotateGunTowardsDirection(FVector Direction);
 
+	UFUNCTION(BlueprintCallable, Category = Weapon)
 	virtual void RotateGunTowardsLocation(FVector Location);
 
 	UFUNCTION(BlueprintCallable, Category = Weapon)

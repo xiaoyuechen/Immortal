@@ -25,6 +25,7 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintCallable, Category = AI)
 	class AImmortalCharacter* GetPlayerCharacter() const;
 
 	virtual void SetPawn(APawn* InPawn) override;

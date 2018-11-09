@@ -31,7 +31,7 @@ protected:
 
 	FTimerHandle CooldownTimer;
 
-	bool bActuallyFired = false;
+	bool bFireSucceeded = false;
 
 public:	
 	// Called every frame

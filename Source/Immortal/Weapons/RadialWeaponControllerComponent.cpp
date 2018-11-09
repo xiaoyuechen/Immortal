@@ -31,7 +31,7 @@ void URadialWeaponControllerComponent::TickComponent(float DeltaTime, ELevelTick
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (bShouldDrawSphere && bActuallyFired == true)
+	if (bShouldDrawSphere && bFireSucceeded == true)
 	{
 		DrawDebugSphere(GetWorld(), GetOwner()->GetActorLocation(), DamageRadius, 8, FColor(0, 0, 255), false, -1.0f, (uint8)'\000', 3.0f);
 
@@ -45,12 +45,11 @@ void URadialWeaponControllerComponent::Fire()
 	{
 		UGameplayStatics::ApplyRadialDamage(this, Damage, GetOwner()->GetActorLocation(), DamageRadius, UDamageType::StaticClass(), { GetOwner() }, GetOwner());
 		GetWorld()->GetTimerManager().SetTimer(CooldownTimer, WeaponCooldownTime, false);
-		bActuallyFired = true;
+		bFireSucceeded = true;
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Yamm"));
-		bActuallyFired = false;
+		bFireSucceeded = false;
 	}
 }
 
