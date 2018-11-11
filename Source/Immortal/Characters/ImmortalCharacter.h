@@ -92,7 +92,8 @@ protected:
 	int32 CurrentHealth;
 public:
 
-
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void RecoverHealthAtRate(float Rate);
 
 	// Returns current health as a percentage of starting health, between 0 and 1
 	UFUNCTION(BlueprintPure, Category = "Health")

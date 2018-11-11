@@ -154,6 +154,19 @@ void AImmortalCharacter::ResetCharacter()
 }
 
 
+void AImmortalCharacter::RecoverHealthAtRate(float Rate)
+{
+	if (CurrentHealth < StartingHealth)
+	{
+		CurrentHealth += Rate;
+	}
+	else
+	{
+		CurrentHealth = StartingHealth;
+	}
+
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // Getter Functions
 float AImmortalCharacter::GetHealthPercent() const

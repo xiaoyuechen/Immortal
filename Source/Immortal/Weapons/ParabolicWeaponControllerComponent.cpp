@@ -60,10 +60,10 @@ void UParabolicWeaponControllerComponent::TickComponent(float DeltaTime, ELevelT
 
 void UParabolicWeaponControllerComponent::AimAt(FVector Location)
 {
-	if (!ensure(Gun && Muzzle && ProjectileBlueprint)) { return; }
+	if (!ensure(Gun && ProjectileBlueprint)) { return; }
 
 	FVector OutLaunchVelocity;
-	FVector StartLocation = Muzzle->GetComponentLocation();
+	FVector StartLocation = Gun->GetComponentLocation();
 
 	auto ProjectileBlueprintObj = NewObject<AProjectile>(this, ProjectileBlueprint);
 	if (!ProjectileBlueprintObj) { return; }

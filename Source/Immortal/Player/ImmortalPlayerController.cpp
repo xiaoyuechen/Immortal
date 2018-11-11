@@ -82,6 +82,7 @@ void AImmortalPlayerController::OnCharacterDeath()
 	if (PossessedCharacter->IsA(Character0Blueprint))
 	{
 		OnCharacter0Death();
+		PossessedCharacter->DisableInput(GetWorld()->GetFirstPlayerController());
 	}
 	else
 	{

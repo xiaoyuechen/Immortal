@@ -46,6 +46,7 @@ protected:
 	UFUNCTION()
 	virtual void OnCharacterDeath();
 
+	UFUNCTION()
 	virtual void OnPlayerSwap();
 
 	UFUNCTION()

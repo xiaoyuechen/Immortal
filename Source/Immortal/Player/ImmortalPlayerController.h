@@ -57,6 +57,8 @@ private:
 
 	class UParabolicWeaponControllerComponent* FireComponent;
 
+	FTimerHandle InputDisableTime;
+
 	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
 	float SwapRadius = 200.f;
 
