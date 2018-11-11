@@ -4,6 +4,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "../Characters/ImmortalCharacter.h"
 #include "../Weapons/ParabolicWeaponControllerComponent.h"
+#include "../Weapons/RadialWeaponControllerComponent.h"
+
 
 AImmortalPlayerController::AImmortalPlayerController()
 {
@@ -97,6 +99,10 @@ void AImmortalPlayerController::OnCharacter0Death()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Character0 died"));
 	UnPossess();
+	if (PossessedCharacter->FindComponentByClass<URadialWeaponControllerComponent>())
+	{
+		PossessedCharacter->FindComponentByClass<URadialWeaponControllerComponent>()->bShouldDrawSphere = false;
+	}
 
 	GetWorld()->GetTimerManager().SetTimer(InputDisableTimer, this, &AImmortalPlayerController::ReSpawnPlayerCharacter, InputDisableTime);
 }

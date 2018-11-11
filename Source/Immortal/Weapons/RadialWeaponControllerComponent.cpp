@@ -46,6 +46,12 @@ void URadialWeaponControllerComponent::Fire()
 		UGameplayStatics::ApplyRadialDamage(this, Damage, GetOwner()->GetActorLocation(), DamageRadius, UDamageType::StaticClass(), { GetOwner() }, GetOwner());
 		GetWorld()->GetTimerManager().SetTimer(CooldownTimer, WeaponCooldownTime, false);
 		bFireSucceeded = true;
+
+		if (FireSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetOwner()->GetActorLocation());
+
+		}
 	}
 	else
 	{

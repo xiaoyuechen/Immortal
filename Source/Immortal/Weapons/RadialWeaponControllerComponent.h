@@ -29,6 +29,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Setup)
 	float WeaponCooldownTime = .2f;
 
+	/** Sound to play each time we fire */
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+	class USoundBase* FireSound;
+
 	FTimerHandle CooldownTimer;
 
 	bool bFireSucceeded = false;

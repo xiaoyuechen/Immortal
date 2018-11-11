@@ -99,11 +99,13 @@ void UParabolicWeaponControllerComponent::Fire()
 		FVector SpawnLocation = Muzzle->GetComponentLocation();
 		FRotator SpawnRotation = Muzzle->GetComponentRotation();
 
-		//Set Spawn Collision Handling Override
-		FActorSpawnParameters ActorSpawnParams;
-		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+		////Set Spawn Collision Handling Override
+		//FActorSpawnParameters ActorSpawnParams;
+		//ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-		auto Projectile = GetWorld()-> SpawnActor<AProjectile>(ProjectileBlueprint, SpawnLocation, SpawnRotation, ActorSpawnParams);
+		//auto Projectile = GetWorld()-> SpawnActor<AProjectile>(ProjectileBlueprint, SpawnLocation, SpawnRotation, ActorSpawnParams);
+
+		auto Projectile = GetWorld()-> SpawnActor<AProjectile>(ProjectileBlueprint, SpawnLocation, SpawnRotation);
 
 		if (!Projectile)
 		{ 
