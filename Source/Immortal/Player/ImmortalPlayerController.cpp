@@ -60,6 +60,8 @@ void AImmortalPlayerController::SwapCharacter()
 	{
 		UnPossess();
 		PossessedCharacter->OnDeath.RemoveDynamic(this, &AImmortalPlayerController::OnCharacterDeath);
+		PossessedCharacter->Destroy(PossessedCharacter);
+
 		Possess(ClosestCharacter);
 		SetPawn(ClosestCharacter);
 
@@ -78,11 +80,12 @@ void AImmortalPlayerController::QuitGame()
 
 void AImmortalPlayerController::OnCharacterDeath()
 {
+	SpawnLocation = PossessedCharacter->GetActorLocation();
+	SpawnRotation = PossessedCharacter->GetActorRotation();
 	if (!Character0Blueprint) { return; }
 	if (PossessedCharacter->IsA(Character0Blueprint))
 	{
 		OnCharacter0Death();
-		PossessedCharacter->DisableInput(GetWorld()->GetFirstPlayerController());
 	}
 	else
 	{
@@ -93,11 +96,27 @@ void AImmortalPlayerController::OnCharacterDeath()
 void AImmortalPlayerController::OnCharacter0Death()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Character0 died"));
+	UnPossess();
+
+	GetWorld()->GetTimerManager().SetTimer(InputDisableTimer, this, &AImmortalPlayerController::ReSpawnPlayerCharacter, InputDisableTime);
 }
+
 
 void AImmortalPlayerController::OnOtherCharacterDeadth()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Other Character died"));
+	UnPossess();
+	ReSpawnPlayerCharacter();
+
+}
+
+void AImmortalPlayerController::ReSpawnPlayerCharacter()
+{
+	PossessedCharacter->Destroy(PossessedCharacter);
+	if (!Character0Blueprint) { return; }
+	auto NewCharacter = GetWorld()->SpawnActor<AImmortalCharacter>(Character0Blueprint, SpawnLocation, SpawnRotation);
+	Possess(NewCharacter);
+	PossessedCharacter = NewCharacter;
 }
 
 void AImmortalPlayerController::AimTowardsCrossHead()
@@ -169,6 +188,7 @@ bool AImmortalPlayerController::GetLookVectorHitLocation(FVector LookDirection, 
 	HitLocation = FVector(0);
 	return false; // Line trace didn't succeed
 }
+
 
 
 APawn * AImmortalPlayerController::GetClosestPawn()

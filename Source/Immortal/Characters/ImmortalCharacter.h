@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "ImmortalCharacter.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBaseCharacterDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FImmortalCharacterDelegate);
 
 UENUM()
 enum class EActionState : uint8
@@ -102,6 +102,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Reset")
 	void ResetCharacter();
 
-	FBaseCharacterDelegate OnDeath;
+	FImmortalCharacterDelegate OnDeath;
 
 };

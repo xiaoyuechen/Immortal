@@ -44,6 +44,9 @@ protected:
 	bool GetLookDirection(FVector& LookDirection) const;
 	bool GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation) const;
 
+	UFUNCTION()
+	void ReSpawnPlayerCharacter();
+
 private:
 	UFUNCTION()
 	void OnCharacterDeath();
@@ -57,7 +60,11 @@ private:
 
 	class UParabolicWeaponControllerComponent* FireComponent;
 
-	FTimerHandle InputDisableTime;
+	FTimerHandle InputDisableTimer;
+
+	FVector SpawnLocation;
+
+	FRotator SpawnRotation;
 
 	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
 	float SwapRadius = 200.f;
@@ -70,4 +77,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
 	float CrosshairYLocation = 0.33333f;
+
+	UPROPERTY(EditAnywhere, Category = "CharacterSetup")
+	float InputDisableTime = 5.f;
 };
